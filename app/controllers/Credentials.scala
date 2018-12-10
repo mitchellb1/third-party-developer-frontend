@@ -38,7 +38,7 @@ import scala.concurrent.Future
 class Credentials @Inject()(val applicationService: ApplicationService,
                             val developerConnector: ThirdPartyDeveloperConnector,
                             val auditService: AuditService,
-                            errorHandler: ErrorHandler,
+                            val errorHandler: ErrorHandler,
                             val sessionService: SessionService,
                             implicit val appConfig: ApplicationConfig)
   extends ApplicationController {
