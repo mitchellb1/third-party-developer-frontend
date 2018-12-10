@@ -16,6 +16,8 @@
 
 package controllers
 
+import javax.inject.Inject
+
 import config.{ApplicationConfig, ErrorHandler}
 import domain._
 import javax.inject.{Inject, Singleton}

@@ -16,11 +16,12 @@
 
 package controllers
 
+import javax.inject.Inject
+
 import config.{ApplicationConfig, ErrorHandler}
 import connectors.ThirdPartyDeveloperConnector
 import controllers.FormKeys.clientSecretLimitExceeded
 import domain._
-import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.Play.current
 import play.api.data.Form
@@ -34,12 +35,11 @@ import views.html._
 
 import scala.concurrent.Future
 
-@Singleton
 class Credentials @Inject()(val applicationService: ApplicationService,
                             val developerConnector: ThirdPartyDeveloperConnector,
                             val auditService: AuditService,
+                            errorHandler: ErrorHandler,
                             val sessionService: SessionService,
-                            val errorHandler: ErrorHandler,
                             implicit val appConfig: ApplicationConfig)
   extends ApplicationController {
 

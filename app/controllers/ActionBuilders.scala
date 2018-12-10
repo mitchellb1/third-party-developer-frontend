@@ -16,6 +16,8 @@
 
 package controllers
 
+import javax.inject.Inject
+
 import config.{ApplicationConfig, ErrorHandler}
 import domain.AccessType.{PRIVILEGED, ROPC}
 import domain.{BadRequestError, Developer, Role, State}
@@ -32,11 +34,9 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait ActionBuilders {
-
-  val errorHandler: ErrorHandler
-  val applicationService: ApplicationService
-  implicit val appConfig: ApplicationConfig
+class ActionBuilders @Inject()(errorHandler: ErrorHandler,
+                               applicationService: ApplicationService,
+                               implicit val appConfig: ApplicationConfig) {
 
   private implicit def hc(implicit request: Request[_]): HeaderCarrier =
     HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))

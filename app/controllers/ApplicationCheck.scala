@@ -16,6 +16,10 @@
 
 package controllers
 
+import javax.inject.Inject
+
+import config.ApplicationConfig.currentTermsOfUseVersion
+import config.{ApplicationConfig, ErrorHandler}
 import config.{ApplicationConfig, ErrorHandler}
 import controllers.FormKeys._
 import domain._
@@ -33,13 +37,13 @@ import views.html.{applicationcheck, editapplication}
 
 import scala.concurrent.Future
 
-@Singleton
-class ApplicationCheck @Inject()(val applicationService: ApplicationService,
+class ApplicationCheck @Inject()(errorHandler: ErrorHandler,
                                  val apiSubscriptionsHelper: ApiSubscriptionsHelper,
-                                 val sessionService: SessionService,
-                                 val errorHandler: ErrorHandler,
-                                 implicit val appConfig: ApplicationConfig)
-  extends ApplicationController() with ApplicationHelper {
+                                 override val sessionService: SessionService,
+                                 override implicit val appConfig: ApplicationConfig,
+                                 override val applicationService: ApplicationService)
+  extends ApplicationController(errorHandler, applicationService, appConfig) with ApplicationHelper {
+
 
   def withAppInTestingState(appId: String)(f: Application => Future[Result])(implicit request: RequestWithAttributes[AnyContent]) = {
     applicationForRequest(appId) flatMap { app =>

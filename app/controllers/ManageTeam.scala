@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 package controllers
 
+import javax.inject.Inject
+
 import config.{ApplicationConfig, ErrorHandler}
 import connectors.ThirdPartyDeveloperConnector
 import domain._
 import helpers.string._
-import javax.inject.{Inject, Singleton}
 import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
@@ -29,13 +30,12 @@ import service._
 import scala.concurrent.Future
 import scala.concurrent.Future.successful
 
-@Singleton
-class ManageTeam @Inject()(val sessionService: SessionService,
+class ManageTeam @Inject()(errorHandler: ErrorHandler,
+                           val sessionService: SessionService,
+                           implicit val appConfig: ApplicationConfig,
                            val auditService: AuditService,
                            developerConnector: ThirdPartyDeveloperConnector,
-                           val applicationService: ApplicationService,
-                           val errorHandler: ErrorHandler,
-                           implicit val appConfig: ApplicationConfig) extends ApplicationController {
+                           val applicationService: ApplicationService) extends ApplicationController {
 
   def manageTeam(applicationId: String, error: Option[String] = None) = teamMemberOnStandardApp(applicationId) { implicit request =>
     val application = request.application

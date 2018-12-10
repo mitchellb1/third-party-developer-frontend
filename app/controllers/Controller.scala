@@ -16,6 +16,8 @@
 
 package controllers
 
+import javax.inject.Inject
+
 import config.{ApplicationConfig, AuthConfigImpl, ErrorHandler}
 import domain._
 import jp.t2v.lab.play2.auth.{AuthElement, OptionalAuthElement}
@@ -38,8 +40,8 @@ trait HeaderEnricher {
     }
 }
 
-abstract class LoggedInController extends BaseController with AuthElement {
-  implicit def hc(implicit request: Request[_]): HeaderCarrier = {
+class LoggedInController @Inject()() extends BaseController with AuthElement {
+  override implicit def hc(implicit request: Request[_]): HeaderCarrier = {
     val carrier = super.hc
     request match {
       case x: RequestWithAttributes[_] => enrichHeaders(carrier, Some(loggedIn(x)))
@@ -71,12 +73,8 @@ abstract class LoggedInController extends BaseController with AuthElement {
 
 case class ApplicationRequest[A](application: Application, role: Role, user: Developer, request: Request[A]) extends WrappedRequest[A](request)
 
-abstract class ApplicationController()
-  extends LoggedInController with ActionBuilders {
-
-  val errorHandler: ErrorHandler
-  val applicationService: ApplicationService
-  implicit val appConfig: ApplicationConfig
+class ApplicationController @Inject()(errorHandler: ErrorHandler, val applicationService: ApplicationService, override implicit val appConfig: ApplicationConfig)
+  extends ActionBuilders(errorHandler, applicationService, appConfig) with LoggedInController {
 
   implicit def userFromRequest(implicit request: ApplicationRequest[_]): User = request.user
 
@@ -108,12 +106,12 @@ abstract class ApplicationController()
     }
 }
 
-abstract class LoggedOutController()
-  extends BaseController() with OptionalAuthElement {
-
-  val errorHandler: ErrorHandler
-  val sessionService: SessionService
-  override implicit val appConfig: ApplicationConfig
+abstract class LoggedOutController(errorHandler: ErrorHandler,
+                                   sessionService: SessionService,
+                                   override implicit val appConfig: ApplicationConfig)
+  extends BaseController(errorHandler: ErrorHandler,
+    sessionService: SessionService,
+    appConfig: ApplicationConfig) with OptionalAuthElement {
 
   implicit def hc(implicit request: Request[_]): HeaderCarrier = {
     val carrier = super.hc
@@ -135,12 +133,10 @@ abstract class LoggedOutController()
   }
 }
 
-abstract class BaseController()
-  extends AuthConfigImpl with FrontendController with HeaderEnricher {
-
-  val errorHandler: ErrorHandler
-  val sessionService: SessionService
-  override implicit val appConfig: ApplicationConfig
+abstract class BaseController @Inject()(errorHandler: ErrorHandler,
+                                        sessionService: SessionService,
+                                        override implicit val appConfig: ApplicationConfig)
+  extends AuthConfigImpl(errorHandler: ErrorHandler, appConfig, sessionService) with FrontendController with HeaderEnricher {
 
   def ensureLoggedOut(implicit request: Request[_], hc: HeaderCarrier) = {
     tokenAccessor.extract(request).map(sessionService.destroy).getOrElse(Future.successful(()))

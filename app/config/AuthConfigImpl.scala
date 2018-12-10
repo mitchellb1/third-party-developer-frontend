@@ -16,6 +16,8 @@
 
 package config
 
+import javax.inject.Inject
+
 import controllers.routes
 import domain._
 import jp.t2v.lab.play2.auth._
@@ -29,11 +31,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect._
 
-trait AuthConfigImpl  extends AuthConfig {
-
-  val errorHandler: ErrorHandler
-  val sessionService: SessionService
-  implicit val appConfig: ApplicationConfig
+class AuthConfigImpl @Inject()(val errorHandler: ErrorHandler,
+                               implicit val appConfig: ApplicationConfig,
+                               val sessionService: SessionService) extends AuthConfig {
 
   type Id = String
   type User = Developer
