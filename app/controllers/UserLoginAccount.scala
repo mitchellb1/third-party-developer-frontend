@@ -16,8 +16,6 @@
 
 package controllers
 
-import javax.inject.Inject
-
 import config.{ApplicationConfig, ErrorHandler}
 import domain._
 import javax.inject.{Inject, Singleton}
@@ -26,6 +24,7 @@ import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.Action
 import play.api.mvc.{Action, Call}
 import service.AuditAction.{LoginFailedDueToInvalidEmail, LoginFailedDueToInvalidPassword, LoginFailedDueToLockedAccount, LoginSucceeded}
 import service.{AuditAction, AuditService, SessionService}

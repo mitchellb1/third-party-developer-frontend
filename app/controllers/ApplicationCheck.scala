@@ -37,13 +37,12 @@ import views.html.{applicationcheck, editapplication}
 
 import scala.concurrent.Future
 
-class ApplicationCheck @Inject()(errorHandler: ErrorHandler,
+class ApplicationCheck @Inject()(val errorHandler: ErrorHandler,
                                  val apiSubscriptionsHelper: ApiSubscriptionsHelper,
                                  override val sessionService: SessionService,
                                  override implicit val appConfig: ApplicationConfig,
                                  override val applicationService: ApplicationService)
-  extends ApplicationController(errorHandler, applicationService, appConfig) with ApplicationHelper {
-
+  extends ApplicationController() with ApplicationHelper {
 
   def withAppInTestingState(appId: String)(f: Application => Future[Result])(implicit request: RequestWithAttributes[AnyContent]) = {
     applicationForRequest(appId) flatMap { app =>

@@ -16,8 +16,6 @@
 
 package controllers
 
-import javax.inject.Inject
-
 import config.{ApplicationConfig, ErrorHandler}
 import connectors.ThirdPartyDeveloperConnector
 import domain.SubscriptionRedirect._
@@ -75,14 +73,14 @@ class Subscriptions @Inject()(val developerConnector: ThirdPartyDeveloperConnect
           Future.successful(redirect(redirectTo, applicationId))
       }
 
-    def handleValidForm(form: ChangeSubscriptionForm) =
-      if (request.application.hasLockedSubscriptions) {
-        Future.successful(Forbidden(errorHandler.badRequestTemplate))
-      } else {
-        updateSubscription(form).map(_ => redirect(redirectTo, applicationId))
-      }
+      def handleValidForm(form: ChangeSubscriptionForm) =
+        if (request.application.hasLockedSubscriptions) {
+          Future.successful(Forbidden(errorHandler.badRequestTemplate))
+        } else {
+          updateSubscription(form).map(_ => redirect(redirectTo, applicationId))
+        }
 
-    def handleInvalidForm(formWithErrors: Form[ChangeSubscriptionForm]) = Future.successful(BadRequest(errorHandler.badRequestTemplate))
+      def handleInvalidForm(formWithErrors: Form[ChangeSubscriptionForm]) = Future.successful(BadRequest(errorHandler.badRequestTemplate))
 
       ChangeSubscriptionForm.form.bindFromRequest.fold(handleInvalidForm, handleValidForm);
   }
@@ -123,12 +121,12 @@ class Subscriptions @Inject()(val developerConnector: ThirdPartyDeveloperConnect
       Future.successful(
         BadRequest(changeSubscriptionConfirmation(request.application, formWithErrors, apiName, apiContext, apiVersion, subscribed, redirectTo)))
 
-    if (request.application.hasLockedSubscriptions) {
-      applicationService.isSubscribedToApi(request.application, apiName, apiContext, apiVersion).flatMap(subscribed =>
-        ChangeSubscriptionConfirmationForm.form.bindFromRequest.fold(handleInvalidForm(subscribed), handleValidForm(subscribed)))
-    } else {
-      Future.successful(BadRequest(errorHandler.badRequestTemplate))
-    }
+      if (request.application.hasLockedSubscriptions) {
+        applicationService.isSubscribedToApi(request.application, apiName, apiContext, apiVersion).flatMap(subscribed =>
+          ChangeSubscriptionConfirmationForm.form.bindFromRequest.fold(handleInvalidForm(subscribed), handleValidForm(subscribed)))
+      } else {
+        Future.successful(BadRequest(errorHandler.badRequestTemplate))
+      }
   }
 
   def saveSubscriptionFields(applicationId: String, apiContext: String, apiVersion: String, subscriptionRedirect: String) = loggedInAction { implicit request =>
@@ -189,6 +187,7 @@ class Subscriptions @Inject()(val developerConnector: ThirdPartyDeveloperConnect
   }
 }
 
+@Singleton
 class ApiSubscriptionsHelper @Inject()(applicationService: ApplicationService) {
 
   def fetchPageDataFor(application: Application)(implicit hc: HeaderCarrier): Future[PageData] = {

@@ -16,10 +16,13 @@
 
 package config
 
+import javax.inject.Inject
+
+import play.api.Configuration
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.config.{AppName, RunMode}
 import uk.gov.hmrc.play.bootstrap.config.LoadAuditingConfig
 
-object ApplicationAuditConnector extends AuditConnector with AppName with RunMode {
-  override lazy val auditingConfig = LoadAuditingConfig(s"$env.auditing")
+class ApplicationAuditConnector @Inject()(config: Configuration) extends AuditConnector with AppName with RunMode {
+  override lazy val auditingConfig = LoadAuditingConfig(config, mode, s"$env.auditing")
 }
