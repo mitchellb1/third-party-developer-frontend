@@ -24,6 +24,8 @@ import org.joda.time.DateTimeZone
 import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito._
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.mockito.MockitoSugar
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
