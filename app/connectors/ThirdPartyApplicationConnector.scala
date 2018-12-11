@@ -17,6 +17,7 @@
 package connectors
 
 import java.net.URLEncoder.encode
+import javax.inject.Inject
 
 import config.ApplicationConfig
 import domain.DefinitionFormats._
@@ -30,6 +31,7 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.play.http.metrics.{API, Metrics, PlayMetrics}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.play.http.metrics.{API, PlayMetrics}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
