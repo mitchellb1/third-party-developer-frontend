@@ -16,6 +16,8 @@
 
 package connectors
 
+import java.net.URLEncoder.encode
+
 import config.ApplicationConfig
 import domain.DefinitionFormats._
 import domain._
@@ -26,7 +28,8 @@ import play.api.http.HeaderNames.CONTENT_TYPE
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import uk.gov.hmrc.play.http.metrics.API
+import uk.gov.hmrc.play.http.metrics.{API, Metrics, PlayMetrics}
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

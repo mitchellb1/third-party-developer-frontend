@@ -20,6 +20,7 @@ import connectors.ThirdPartyDeveloperConnector
 import domain._
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
+import domain.{LoginRequest, Session, SessionInvalid}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

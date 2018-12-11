@@ -18,7 +18,6 @@ package controllers
 
 import javax.inject.Inject
 
-import config.ApplicationConfig.currentTermsOfUseVersion
 import config.{ApplicationConfig, ErrorHandler}
 import config.{ApplicationConfig, ErrorHandler}
 import controllers.FormKeys._
