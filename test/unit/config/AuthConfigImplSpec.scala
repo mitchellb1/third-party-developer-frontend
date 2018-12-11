@@ -24,8 +24,6 @@ import play.api.test.{FakeHeaders, FakeRequest}
 import service.SessionService
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class AuthConfigImplSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
 
   object TestAuthConfigImpl extends AuthConfigImpl {
