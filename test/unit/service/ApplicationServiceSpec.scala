@@ -64,7 +64,7 @@ class ApplicationServiceSpec extends UnitSpec with MockitoSugar with ScalaFuture
     val mockSubscriptionFieldsService = mock[SubscriptionFieldsService]
     val mockDeskproConnector = mock[DeskproConnector]
 
-   
+
     val service = new ApplicationService(connectorsWrapper, mockSubscriptionFieldsService,  mockDeskproConnector, mockAppConfig, mockDeveloperConnector, mockAuditService)
 
     def theProductionConnectorWillReturnTheApplication(applicationId: String, application: Application) = {
