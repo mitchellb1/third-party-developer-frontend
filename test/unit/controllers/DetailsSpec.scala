@@ -16,7 +16,7 @@
 
 package unit.controllers
 
-import config.ApplicationConfig
+import config.{ApplicationConfig, ErrorHandler}
 import connectors.ThirdPartyDeveloperConnector
 import controllers._
 import domain._
