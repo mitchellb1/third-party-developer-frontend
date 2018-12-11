@@ -17,7 +17,6 @@
 package unit.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import config.ApplicationConfig
 import connectors.{ConnectorMetrics, DeskproConnector, NoopConnectorMetrics}
 import domain.{DeskproTicket, Feedback, TicketCreated, TicketId}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -26,7 +25,6 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, Upstream5xxResponse}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.play.http.metrics.API
 
 import scala.concurrent.ExecutionContext.Implicits.global

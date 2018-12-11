@@ -16,7 +16,7 @@
 
 package unit.connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.{ any => _, verify => werify, _}
 import connectors._
 import domain._
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -158,6 +158,7 @@ class ThirdPartyDeveloperConnectorIntegrationTest extends BaseConnectorSpec with
       val result: UserAuthenticationResponse = await(underTest.authenticate(loginRequest))
 
       verify(1, postRequestedFor(urlMatching("/authenticate")).withRequestBody(equalToJson(encryptedLoginRequest.toString)))
+
       result shouldBe UserAuthenticationResponse(accessCodeRequired = false, session = Some(Session(sessionId, Developer(userEmail, "John", "Doe"))))
     }
 
