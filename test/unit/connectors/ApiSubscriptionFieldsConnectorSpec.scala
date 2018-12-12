@@ -25,9 +25,14 @@ import org.mockito.Mockito.{verify, when}
 import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR, NO_CONTENT, OK}
 import uk.gov.hmrc.http.{HttpResponse, _}
 import uk.gov.hmrc.http.{HeaderCarrier, JsValidationException, NotFoundException, Upstream5xxResponse}
+import org.mockito.Matchers.{any, eq => meq}
+import org.mockito.Mockito.when
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 import scala.concurrent.Future
 
 class ApiSubscriptionFieldsConnectorSpec extends BaseConnectorSpec {
