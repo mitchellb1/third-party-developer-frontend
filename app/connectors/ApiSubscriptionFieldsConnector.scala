@@ -21,7 +21,6 @@ import java.net.URLEncoder.encode
 import config.ApplicationConfig
 import domain.ApiSubscriptionFields._
 import javax.inject.{Inject, Singleton}
-import play.api.Configuration
 import play.api.http.Status.NO_CONTENT
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
