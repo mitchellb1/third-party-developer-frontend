@@ -16,10 +16,9 @@
 
 package controllers
 
-import javax.inject.Inject
-
 import config.{ApplicationConfig, ErrorHandler}
 import domain.{Application, CheckInformation, TermsOfUseAgreement, TermsOfUseStatus}
+import javax.inject.Inject
 import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
