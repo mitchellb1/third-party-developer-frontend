@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import connectors.ThirdPartyDeveloperConnector
 import controllers._
 import domain._
+import org.jsoup.Jsoup
 import org.mockito.ArgumentCaptor
 import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{any, eq => mockEq}
@@ -32,11 +33,9 @@ import play.filters.csrf.CSRF.TokenProvider
 import service.{ApplicationService, AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.TestApplications._
+import utils.ViewHelpers._
 import utils.WithCSRFAddToken
 import utils.WithLoggedInSession._
-import utils.ViewHelpers._
-import org.jsoup.Jsoup
-import play.twirl.api.Html
 
 import scala.concurrent.Future._
 
@@ -299,9 +298,6 @@ class DetailsSpec extends BaseControllerSpec with WithCSRFAddToken {
       .willReturn(successful(ApplicationUpdateSuccessful))
     given(underTest.applicationService.updateCheckInformation(any[String], any[CheckInformation])(any[HeaderCarrier]))
       .willReturn(successful(ApplicationUpdateSuccessful))
-
-    given(underTest.errorHandler.notFoundTemplate(any())).willReturn(Html(""))
-    given(underTest.errorHandler.badRequestTemplate(any())).willReturn(Html(""))
 
     val sessionParams = Seq("csrfToken" -> fakeApplication.injector.instanceOf[TokenProvider].generateToken)
     val loggedOutRequest = FakeRequest().withSession(sessionParams: _*)
