@@ -47,7 +47,7 @@ class ThirdPartyDeveloperConnectorIntegrationTest extends BaseConnectorSpec with
   override def fakeApplication(): Application =
     GuiceApplicationBuilder()
       .configure(stubConfig)
-      .bindings(bind[ConnectorMetrics].to[NoopConnectorMetrics])
+      .overrides(bind[ConnectorMetrics].to[NoopConnectorMetrics])
       .in(Mode.Test)
       .build()
 
