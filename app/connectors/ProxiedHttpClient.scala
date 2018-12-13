@@ -24,6 +24,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.play.config.RunMode
 import uk.gov.hmrc.play.http.ws.{WSProxy, WSProxyConfiguration}
 
 @Singleton
@@ -34,12 +35,13 @@ class ProxiedHttpClient @Inject()(config: Configuration,
   extends DefaultHttpClient(config, auditConnector, wsClient) with WSProxy {
 
   val authorization: Option[Authorization] = None
+  private val env = RunMode(environment.mode, config).env
 
   def withAuthorization(bearerToken: String) = new ProxiedHttpClient(config, auditConnector, wsClient, environment) {
     override val authorization = Some(Authorization(s"Bearer $bearerToken"))
   }
 
-  override def wsProxyServer: Option[WSProxyServer] = WSProxyConfiguration(s"${environment.mode}.proxy")
+  override def wsProxyServer: Option[WSProxyServer] = WSProxyConfiguration(s"$env.proxy")
 
   override def buildRequest[A](url: String)(implicit hc: HeaderCarrier) = {
     val hcWithBearerAndAccept = hc.copy(authorization = authorization,
