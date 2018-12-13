@@ -18,13 +18,20 @@ package unit.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import connectors.{ConnectorMetrics, NoopConnectorMetrics, ThirdPartyDeveloperConnector}
+import config.{ApplicationConfig}
+import connectors.{ConnectorMetrics, EncryptedJson, NoopConnectorMetrics, ThirdPartyDeveloperConnector}
 import domain._
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.{Application, Configuration, Mode}
+import org.mockito.Mockito.when
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.{Application, Configuration, Mode}
 import play.api.http.Status
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ThirdPartyDeveloperConnectorEncryptionSpec extends BaseConnectorSpec with GuiceOneAppPerSuite {
   private val stubConfig = Configuration(
