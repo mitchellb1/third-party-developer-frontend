@@ -51,7 +51,9 @@ class ThirdPartyDeveloperConnectorSpec extends BaseConnectorSpec {
     when(mockAppConfig.thirdPartyDeveloperUrl).thenReturn("http://THIRD_PARTY_DEVELOPER:9000")
     when(mockPayloadEncryption.encrypt(any[String])(any())).thenReturn(encryptedString)
 
-    val connector = new ThirdPartyDeveloperConnector(mockHttp, encryptedJson, mockAppConfig, mockMetrics)
+    val connector = new ThirdPartyDeveloperConnector(mockHttp, encryptedJson, mockAppConfig) {
+      override val metrics = NoopMetrics
+    }
     def endpoint(path: String) = s"${connector.serviceBaseUrl}/$path"
   }
 
