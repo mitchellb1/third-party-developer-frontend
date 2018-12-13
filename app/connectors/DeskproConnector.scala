@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class DeskproConnector @Inject()(http: HttpClient, config: ApplicationConfig, val metrics: ConnectorMetrics) {
+class DeskproConnector @Inject()(http: HttpClient, config: ApplicationConfig, metrics: ConnectorMetrics) {
 
   lazy val serviceBaseUrl: String = config.deskproUrl
   val api = API("deskpro")

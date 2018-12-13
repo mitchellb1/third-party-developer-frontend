@@ -18,6 +18,9 @@ package unit.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{ any => _, verify => werify, _}
 import connectors._
+import com.github.tomakehurst.wiremock.client.WireMock._
+import config.ApplicationConfig
+import connectors._
 import domain._
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status._
@@ -26,6 +29,15 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.{Application, Configuration, Mode}
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, Upstream5xxResponse}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.{Application, Configuration, Mode}
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.{JsString, Json}
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.play.bootstrap.http.{DefaultHttpClient, HttpClient}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ThirdPartyDeveloperConnectorIntegrationTest extends BaseConnectorSpec with GuiceOneAppPerSuite {
   private val stubConfig = Configuration(
@@ -35,7 +47,7 @@ class ThirdPartyDeveloperConnectorIntegrationTest extends BaseConnectorSpec with
   override def fakeApplication(): Application =
     GuiceApplicationBuilder()
       .configure(stubConfig)
-      .overrides(bind[ConnectorMetrics].to[NoopConnectorMetrics])
+      .bindings(bind[ConnectorMetrics].to[NoopConnectorMetrics])
       .in(Mode.Test)
       .build()
 

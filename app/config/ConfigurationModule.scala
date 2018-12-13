@@ -20,6 +20,7 @@ import com.google.inject.AbstractModule
 import connectors.{ConnectorMetrics, ConnectorMetricsImpl}
 import config.SessionTimeoutFilterWithWhitelist
 import uk.gov.hmrc.play.bootstrap.filters.frontend.SessionTimeoutFilter
+import connectors._
 
 class ConfigurationModule extends AbstractModule {
   override def configure(): Unit = {

@@ -18,6 +18,7 @@ package unit.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import connectors.{ConnectorMetrics, DeskproConnector, NoopConnectorMetrics}
+import config.ApplicationConfig
 import domain.{DeskproTicket, Feedback, TicketCreated, TicketId}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.{Application, Configuration, Mode}
