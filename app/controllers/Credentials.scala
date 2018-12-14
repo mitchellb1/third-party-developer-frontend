@@ -16,12 +16,11 @@
 
 package controllers
 
-import javax.inject.{Inject, Singleton}
-
 import config.{ApplicationConfig, ErrorHandler}
 import connectors.ThirdPartyDeveloperConnector
 import controllers.FormKeys.clientSecretLimitExceeded
 import domain._
+import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.Play.current
 import play.api.data.Form

@@ -16,8 +16,6 @@
 
 package connectors
 
-import java.net.URLEncoder.encode
-
 import config.ApplicationConfig
 import domain.DefinitionFormats._
 import domain._
