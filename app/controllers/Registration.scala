@@ -19,7 +19,7 @@ package controllers
 import config.{ApplicationConfig, ErrorHandler}
 import connectors.ThirdPartyDeveloperConnector
 import domain.{EmailAlreadyInUse, RegistrationSuccessful}
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Action
@@ -29,6 +29,7 @@ import views.html.signIn
 
 import scala.concurrent.Future
 
+@Singleton
 class Registration @Inject()(override val sessionService: SessionService,
                              val connector: ThirdPartyDeveloperConnector,
                              val errorHandler: ErrorHandler,

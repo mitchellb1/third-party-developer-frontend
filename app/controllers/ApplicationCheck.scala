@@ -16,11 +16,10 @@
 
 package controllers
 
-import javax.inject.Inject
-
 import config.{ApplicationConfig, ErrorHandler}
 import controllers.FormKeys._
 import domain._
+import javax.inject.{Inject, Singleton}
 import jp.t2v.lab.play2.stackc.RequestWithAttributes
 import play.api.data.Form
 import play.api.data.Forms.{boolean, mapping, optional, text}
@@ -32,6 +31,7 @@ import views.html.{applicationcheck, editapplication}
 
 import scala.concurrent.Future
 
+@Singleton
 class ApplicationCheck @Inject()(val applicationService: ApplicationService,
                                  val apiSubscriptionsHelper: ApiSubscriptionsHelper,
                                  val sessionService: SessionService,

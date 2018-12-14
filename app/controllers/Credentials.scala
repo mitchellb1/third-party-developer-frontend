@@ -16,7 +16,7 @@
 
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import config.{ApplicationConfig, ErrorHandler}
 import connectors.ThirdPartyDeveloperConnector
@@ -35,6 +35,7 @@ import views.html._
 
 import scala.concurrent.Future
 
+@Singleton
 class Credentials @Inject()(val applicationService: ApplicationService,
                             val developerConnector: ThirdPartyDeveloperConnector,
                             val auditService: AuditService,

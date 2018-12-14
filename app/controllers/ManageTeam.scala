@@ -20,7 +20,7 @@ import config.{ApplicationConfig, ErrorHandler}
 import connectors.ThirdPartyDeveloperConnector
 import domain._
 import helpers.string._
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
@@ -29,6 +29,7 @@ import service._
 import scala.concurrent.Future
 import scala.concurrent.Future.successful
 
+@Singleton
 class ManageTeam @Inject()(val sessionService: SessionService,
                            val auditService: AuditService,
                            developerConnector: ThirdPartyDeveloperConnector,
