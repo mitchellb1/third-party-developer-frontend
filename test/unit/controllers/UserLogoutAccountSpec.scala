@@ -32,6 +32,7 @@ import play.api.test.Helpers._
 import play.filters.csrf.CSRF._
 import service.{DeskproService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import utils.WithCSRFAddToken
 import utils.WithLoggedInSession._
@@ -49,18 +50,18 @@ class UserLogoutAccountSpec extends UnitSpec with MockitoSugar with WithFakeAppl
       mock[DeskproService],
       mock[SessionService],
       mock[config.ErrorHandler],
-      mock[ApplicationConfig])
+      stubMessagesControllerComponents()
+    )(mock[ApplicationConfig])
 
     given(underTest.sessionService.destroy(Matchers.eq(session.sessionId))(any[HeaderCarrier]))
-        .willReturn(Future.successful(204))
+      .willReturn(Future.successful(NO_CONTENT))
 
     def givenUserLoggedIn() =
       given(underTest.sessionService.fetch(Matchers.eq(session.sessionId))(any[HeaderCarrier])).willReturn(Future.successful(Some(session)))
 
-    val sessionParams = Seq("csrfToken" ->  fakeApplication.injector.instanceOf[TokenProvider].generateToken)
+    val sessionParams = Seq("csrfToken" -> fakeApplication.injector.instanceOf[TokenProvider].generateToken)
     val requestWithCsrfToken = FakeRequest().withLoggedIn(underTest)(sessionId).withSession(sessionParams: _*)
   }
-
 
 
   "logging out" should {
@@ -115,7 +116,7 @@ class UserLogoutAccountSpec extends UnitSpec with MockitoSugar with WithFakeAppl
   "logoutSurveyAction" should {
     "redirect to the login page if the user is not logged in" in new Setup {
       val request = requestWithCsrfToken.withFormUrlEncodedBody(
-        ("blah" -> "thing")
+        "blah" -> "thing"
       )
       val result = await(underTest.logoutSurveyAction()(request))
 
@@ -126,10 +127,10 @@ class UserLogoutAccountSpec extends UnitSpec with MockitoSugar with WithFakeAppl
     "submit the survey and redirect to the logout confirmation page if the user is logged in" in new Setup {
       givenUserLoggedIn()
 
-      val form = SignOutSurveyForm(Some(2), "no suggestions", s"${user.firstName} ${user.lastName}", user.email, true)
+      val form = SignOutSurveyForm(Some(2), "no suggestions", s"${user.firstName} ${user.lastName}", user.email, isJavascript = true)
       val request = requestWithCsrfToken.withFormUrlEncodedBody(
-        ("rating" -> form.rating.get.toString), ("email" -> form.email), ("name" -> form.name),
-        ("isJavascript" -> form.isJavascript.toString), ("improvementSuggestions" -> form.improvementSuggestions)
+        "rating" -> form.rating.get.toString, "email" -> form.email, "name" -> form.name,
+        "isJavascript" -> form.isJavascript.toString, "improvementSuggestions" -> form.improvementSuggestions
       )
 
       val result = await(underTest.logoutSurveyAction()(request))

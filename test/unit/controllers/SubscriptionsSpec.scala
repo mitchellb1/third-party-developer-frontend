@@ -30,6 +30,7 @@ import play.api.test.Helpers._
 import play.filters.csrf.CSRF.TokenProvider
 import service._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.CSRFTokenHelper._
 import utils.WithCSRFAddToken
@@ -89,7 +90,8 @@ class SubscriptionsSpec extends BaseControllerSpec with SubscriptionTestHelperSu
       mock[ApplicationService],
       mock[SessionService],
       mockErrorHandler,
-      mock[ApplicationConfig])
+      stubMessagesControllerComponents()
+    )(mock[ApplicationConfig])
 
     val hc = HeaderCarrier()
 
@@ -258,14 +260,30 @@ class SubscriptionsSpec extends BaseControllerSpec with SubscriptionTestHelperSu
       }
     }
 
-    "an administrator attempts to change a submitted-for-checking production application" should { behave like forbiddenSubscriptionChange(adminSubmittedProductionApplication) }
-    "an administrator attempts to change a created production application" should { behave like allowedSubscriptionChangeWithCheckUpdate(adminCreatedProductionApplication) }
-    "an administrator attempts to change a submitted-for-checking sandbox application" should { behave like allowedSubscriptionChange(adminSubmittedSandboxApplication) }
-    "an administrator attempts to change a created sandbox application" should { behave like allowedSubscriptionChange(adminCreatedSandboxApplication) }
-    "a developer attempts to change a submitted-for-checking production application" should { behave like forbiddenSubscriptionChange(developerSubmittedProductionApplication) }
-    "a developer attempts to change a created production application" should { behave like allowedSubscriptionChangeWithCheckUpdate(developerCreatedProductionApplication) }
-    "a developer attempts to change a submitted-for-checking sandbox application" should { behave like allowedSubscriptionChange(developerSubmittedSandboxApplication) }
-    "a developer attempts to change a created sandbox application" should { behave like allowedSubscriptionChange(devloperCreatedSandboxApplication) }
+    "an administrator attempts to change a submitted-for-checking production application" should {
+      behave like forbiddenSubscriptionChange(adminSubmittedProductionApplication)
+    }
+    "an administrator attempts to change a created production application" should {
+      behave like allowedSubscriptionChangeWithCheckUpdate(adminCreatedProductionApplication)
+    }
+    "an administrator attempts to change a submitted-for-checking sandbox application" should {
+      behave like allowedSubscriptionChange(adminSubmittedSandboxApplication)
+    }
+    "an administrator attempts to change a created sandbox application" should {
+      behave like allowedSubscriptionChange(adminCreatedSandboxApplication)
+    }
+    "a developer attempts to change a submitted-for-checking production application" should {
+      behave like forbiddenSubscriptionChange(developerSubmittedProductionApplication)
+    }
+    "a developer attempts to change a created production application" should {
+      behave like allowedSubscriptionChangeWithCheckUpdate(developerCreatedProductionApplication)
+    }
+    "a developer attempts to change a submitted-for-checking sandbox application" should {
+      behave like allowedSubscriptionChange(developerSubmittedSandboxApplication)
+    }
+    "a developer attempts to change a created sandbox application" should {
+      behave like allowedSubscriptionChange(devloperCreatedSandboxApplication)
+    }
   }
 
   "changeLockedApiSubscription" when {
@@ -341,14 +359,30 @@ class SubscriptionsSpec extends BaseControllerSpec with SubscriptionTestHelperSu
       }
     }
 
-    "an administrator attempts to change a submitted-for-checking production application" should { behave like allowedLockedSubscriptionChangeRequest(adminSubmittedProductionApplication) }
-    "an administrator attempts to change a created production application" should { behave like badLockedSubscriptionChangeRequest(adminCreatedProductionApplication) }
-    "an administrator attempts to change a submitted-for-checking sandbox application" should { behave like badLockedSubscriptionChangeRequest(adminSubmittedSandboxApplication) }
-    "an administrator attempts to change a created sandbox application" should { behave like badLockedSubscriptionChangeRequest(adminCreatedSandboxApplication) }
-    "a developer attempts to change a submitted-for-checking production application" should { behave like forbiddenLockedSubscriptionChangeRequest(developerSubmittedProductionApplication) }
-    "a developer attempts to change a created production application" should { behave like forbiddenLockedSubscriptionChangeRequest(developerCreatedProductionApplication) }
-    "a developer attempts to change a submitted-for-checking sandbox application" should { behave like forbiddenLockedSubscriptionChangeRequest(developerSubmittedSandboxApplication) }
-    "a developer attempts to change a created sandbox application" should { behave like forbiddenLockedSubscriptionChangeRequest(devloperCreatedSandboxApplication) }
+    "an administrator attempts to change a submitted-for-checking production application" should {
+      behave like allowedLockedSubscriptionChangeRequest(adminSubmittedProductionApplication)
+    }
+    "an administrator attempts to change a created production application" should {
+      behave like badLockedSubscriptionChangeRequest(adminCreatedProductionApplication)
+    }
+    "an administrator attempts to change a submitted-for-checking sandbox application" should {
+      behave like badLockedSubscriptionChangeRequest(adminSubmittedSandboxApplication)
+    }
+    "an administrator attempts to change a created sandbox application" should {
+      behave like badLockedSubscriptionChangeRequest(adminCreatedSandboxApplication)
+    }
+    "a developer attempts to change a submitted-for-checking production application" should {
+      behave like forbiddenLockedSubscriptionChangeRequest(developerSubmittedProductionApplication)
+    }
+    "a developer attempts to change a created production application" should {
+      behave like forbiddenLockedSubscriptionChangeRequest(developerCreatedProductionApplication)
+    }
+    "a developer attempts to change a submitted-for-checking sandbox application" should {
+      behave like forbiddenLockedSubscriptionChangeRequest(developerSubmittedSandboxApplication)
+    }
+    "a developer attempts to change a created sandbox application" should {
+      behave like forbiddenLockedSubscriptionChangeRequest(devloperCreatedSandboxApplication)
+    }
   }
 
   "changeLockedApiSubscriptionAction" when {
@@ -456,14 +490,30 @@ class SubscriptionsSpec extends BaseControllerSpec with SubscriptionTestHelperSu
       }
     }
 
-    "an administrator attempts to change a submitted-for-checking production application" should { behave like allowedLockedSubscriptionChangeRequest(adminSubmittedProductionApplication) }
-    "an administrator attempts to change a created production application" should { behave like badLockedSubscriptionChangeRequest(adminCreatedProductionApplication) }
-    "an administrator attempts to change a submitted-for-checking sandbox application" should { behave like badLockedSubscriptionChangeRequest(adminSubmittedSandboxApplication) }
-    "an administrator attempts to change a created sandbox application" should { behave like badLockedSubscriptionChangeRequest(adminCreatedSandboxApplication) }
-    "a developer attempts to change a submitted-for-checking production application" should { behave like forbiddenLockedSubscriptionChangeRequest(developerSubmittedProductionApplication) }
-    "a developer attempts to change a created production application" should { behave like forbiddenLockedSubscriptionChangeRequest(developerCreatedProductionApplication) }
-    "a developer attempts to change a submitted-for-checking sandbox application" should { behave like forbiddenLockedSubscriptionChangeRequest(developerSubmittedSandboxApplication) }
-    "a developer attempts to change a created sandbox application" should { behave like forbiddenLockedSubscriptionChangeRequest(devloperCreatedSandboxApplication) }
+    "an administrator attempts to change a submitted-for-checking production application" should {
+      behave like allowedLockedSubscriptionChangeRequest(adminSubmittedProductionApplication)
+    }
+    "an administrator attempts to change a created production application" should {
+      behave like badLockedSubscriptionChangeRequest(adminCreatedProductionApplication)
+    }
+    "an administrator attempts to change a submitted-for-checking sandbox application" should {
+      behave like badLockedSubscriptionChangeRequest(adminSubmittedSandboxApplication)
+    }
+    "an administrator attempts to change a created sandbox application" should {
+      behave like badLockedSubscriptionChangeRequest(adminCreatedSandboxApplication)
+    }
+    "a developer attempts to change a submitted-for-checking production application" should {
+      behave like forbiddenLockedSubscriptionChangeRequest(developerSubmittedProductionApplication)
+    }
+    "a developer attempts to change a created production application" should {
+      behave like forbiddenLockedSubscriptionChangeRequest(developerCreatedProductionApplication)
+    }
+    "a developer attempts to change a submitted-for-checking sandbox application" should {
+      behave like forbiddenLockedSubscriptionChangeRequest(developerSubmittedSandboxApplication)
+    }
+    "a developer attempts to change a created sandbox application" should {
+      behave like forbiddenLockedSubscriptionChangeRequest(devloperCreatedSandboxApplication)
+    }
 
   }
 
@@ -489,7 +539,7 @@ class SubscriptionsSpec extends BaseControllerSpec with SubscriptionTestHelperSu
     }
   }
 
-   private def titleOf(result: Result) = {
+  private def titleOf(result: Result) = {
     val titleRegEx = """<title[^>]*>(.*)</title>""".r
     val title = titleRegEx.findFirstMatchIn(bodyOf(result)).map(_.group(1))
     title.isDefined shouldBe true

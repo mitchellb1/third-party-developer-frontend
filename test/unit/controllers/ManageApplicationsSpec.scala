@@ -32,6 +32,7 @@ import play.api.test.Helpers._
 import play.filters.csrf.CSRF.TokenProvider
 import service.{ApplicationService, AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.ViewHelpers._
@@ -62,8 +63,7 @@ class ManageApplicationsSpec
       mock[SessionService],
       mock[AuditService],
       mock[ErrorHandler],
-      mock[ApplicationConfig]
-    )
+      stubMessagesControllerComponents())(mock[ApplicationConfig])
 
     val hc = HeaderCarrier()
 

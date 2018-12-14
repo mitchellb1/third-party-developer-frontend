@@ -32,6 +32,7 @@ import play.api.test.Helpers._
 import play.filters.csrf.CSRF.TokenProvider
 import service.{ApplicationService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.WithCSRFAddToken
 import utils.WithLoggedInSession._
@@ -48,7 +49,8 @@ class TermsOfUseSpec extends BaseControllerSpec with WithCSRFAddToken {
       mockErrorHandler,
       mock[SessionService],
       mock[ApplicationService],
-      mock[ApplicationConfig])
+      stubMessagesControllerComponents()
+    )(mock[ApplicationConfig])
 
     val loggedInUser = Developer("thirdpartydeveloper@example.com", "John", "Doe")
     val sessionId = "sessionId"
@@ -101,7 +103,7 @@ class TermsOfUseSpec extends BaseControllerSpec with WithCSRFAddToken {
       val result = await(addToken(underTest.termsOfUse(appId))(loggedInRequest))
       status(result) shouldBe OK
       bodyOf(result) should include("Agree to our terms of use")
-      bodyOf(result) should not include("Terms of use accepted on")
+      bodyOf(result) should not include ("Terms of use accepted on")
     }
 
     "render the page for an administrator on a standard production app when the ToU have been agreed" in new Setup {
@@ -143,7 +145,7 @@ class TermsOfUseSpec extends BaseControllerSpec with WithCSRFAddToken {
 
     "record the terms of use agreement for an administrator on a standard production app" in new Setup {
 
-      val  version = "1.1"
+      val version = "1.1"
 
       when(underTest.appConfig.currentTermsOfUseVersion).thenReturn(version)
 

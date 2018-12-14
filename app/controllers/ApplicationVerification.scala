@@ -21,14 +21,15 @@ import domain.ApplicationVerificationFailed
 import javax.inject.{Inject, Singleton}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Action
+import play.api.mvc.MessagesControllerComponents
 import service.{ApplicationService, SessionService}
 
 @Singleton
 class ApplicationVerification @Inject()(val service: ApplicationService,
                                         val sessionService: SessionService,
                                         val errorHandler: ErrorHandler,
-                                        implicit val appConfig: ApplicationConfig) extends LoggedOutController {
+                                        implicit val appConfig: ApplicationConfig,
+                                        val mcc: MessagesControllerComponents) extends LoggedOutController(mcc) {
 
   def verifyUplift(code: String) = Action.async { implicit request =>
     service.verify(code) map { _ => Ok(views.html.applicationVerification(success = true))

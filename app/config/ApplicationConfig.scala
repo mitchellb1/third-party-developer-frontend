@@ -18,11 +18,11 @@ package config
 
 import javax.inject.{Inject, Singleton}
 import org.joda.time.DateTime
-import play.api.{Configuration, Environment}
-import uk.gov.hmrc.play.config.ServicesConfig
+import play.api.Configuration
+import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
 
 @Singleton
-class ApplicationConfig @Inject()(override val runModeConfiguration: Configuration, environment: Environment, servicesConfig: ServicesConfig) {
+class ApplicationConfig @Inject()(override val runModeConfiguration: Configuration, runMode: RunMode, servicesConfig: ServicesConfig) {
 
   protected def mode = environment.mode
 
@@ -37,25 +37,25 @@ class ApplicationConfig @Inject()(override val runModeConfiguration: Configurati
   val thirdPartyApplicationSandboxBearerToken = bearerToken("third-party-application-sandbox")
   val thirdPartyApplicationSandboxUseProxy = useProxy("third-party-application-sandbox")
   val deskproUrl = servicesConfig.baseUrl("hmrc-deskpro")
-  lazy val hotjarId = runModeConfiguration.getInt(s"${servicesConfig.env}.hotjar.id").getOrElse(0)
-  lazy val hotjarEnabled = runModeConfiguration.getBoolean(s"${servicesConfig.env}.features.hotjar").getOrElse(false)
-  lazy val contactPath = runModeConfiguration.getString(s"${servicesConfig.env}.contactPath").getOrElse("")
+  lazy val hotjarId = runModeConfiguration.getOptional[Int](s"${runMode.env}.hotjar.id").getOrElse(0)
+  lazy val hotjarEnabled = runModeConfiguration.getOptional[Boolean](s"${runMode.env}.features.hotjar").getOrElse(false)
+  lazy val contactPath = runModeConfiguration.getOptional[String](s"${runMode.env}.contactPath").getOrElse("")
   lazy val reportAProblemPartialUrl = s"$contactPath/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   lazy val reportAProblemNonJSUrl = s"$contactPath/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   lazy val apiDocumentationFrontendUrl = buildUrl("platform.frontend").getOrElse(servicesConfig.baseUrl("api-documentation-frontend"))
   lazy val thirdPartyDeveloperFrontendUrl = buildUrl("platform.frontend").getOrElse(servicesConfig.baseUrl("third-party-developer-frontend"))
   lazy val productionApiBaseUrl = buildUrl("platform.api.production")
   lazy val sandboxApiBaseUrl = buildUrl("platform.api.sandbox")
-  lazy val sessionTimeoutInSeconds = getConfig("session-timeout-in-seconds", runModeConfiguration.getInt)
-  lazy val analyticsToken = runModeConfiguration.getString(s"$env.google-analytics.token")
-  lazy val analyticsHost = runModeConfiguration.getString(s"$env.google-analytics.host").getOrElse("auto")
-  lazy val securedCookie = runModeConfiguration.getBoolean(s"$env.cookie.secure").getOrElse(true)
-  lazy val isExternalTestEnvironment = runModeConfiguration.getBoolean("isExternalTestEnvironment").getOrElse(false)
+  lazy val sessionTimeoutInSeconds = getConfig("session-timeout-in-seconds", runModeConfiguration.getOptional[Int])
+  lazy val analyticsToken = runModeConfiguration.get[String](s"${runMode.env}.google-analytics.token")
+  lazy val analyticsHost = runModeConfiguration.getOptional[String](s"${runMode.env}.google-analytics.host").getOrElse("auto")
+  lazy val securedCookie = runModeConfiguration.getOptional[Boolean](s"${runMode.env}.cookie.secure").getOrElse(true)
+  lazy val isExternalTestEnvironment = runModeConfiguration.getOptional[Boolean]("isExternalTestEnvironment").getOrElse(false)
   lazy val title = if (isExternalTestEnvironment) "Developer Sandbox" else "Developer Hub"
   lazy val jsonEncryptionKey = getConfig("json.encryption.key")
-  lazy val strategicSandboxEnabled = runModeConfiguration.getBoolean("strategicSandboxEnabled").getOrElse(false)
-  lazy val currentTermsOfUseVersion = runModeConfiguration.getString("currentTermsOfUseVersion").getOrElse("")
-  lazy val currentTermsOfUseDate = DateTime.parse(runModeConfiguration.getString("currentTermsOfUseDate").getOrElse(""))
+  lazy val strategicSandboxEnabled = runModeConfiguration.getOptional[Boolean]("strategicSandboxEnabled").getOrElse(false)
+  lazy val currentTermsOfUseVersion = runModeConfiguration.getOptional[String]("currentTermsOfUseVersion").getOrElse("")
+  lazy val currentTermsOfUseDate = DateTime.parse(runModeConfiguration.getOptional[String]("currentTermsOfUseDate").getOrElse(""))
 
   // API Subscription Fields
   val apiSubscriptionFieldsProductionUrl = apiSubscriptionFieldsUrl("api-subscription-fields-production")
@@ -66,7 +66,7 @@ class ApplicationConfig @Inject()(override val runModeConfiguration: Configurati
   val apiSubscriptionFieldsSandboxUseProxy = useProxy("api-subscription-fields-sandbox")
 
   private def getConfig(key: String) =
-    runModeConfiguration.getString(key).getOrElse {
+    runModeConfiguration.getOptional[String](key).getOrElse {
       sys.error(s"[$key] is not configured!")
     }
 
@@ -76,7 +76,7 @@ class ApplicationConfig @Inject()(override val runModeConfiguration: Configurati
     }
 
   private def buildUrl(key: String) = {
-    (configuration.getString(s"${servicesConfig.env}.$key.protocol"), configuration.getString(s"${servicesConfig.env}.$key.host")) match {
+    (runModeConfiguration.getOptional[String](s"${runMode.env}.$key.protocol"), runModeConfiguration.getOptional[String](s"${runMode.env}.$key.host")) match {
       case (Some(protocol), Some(host)) => Some(s"$protocol://$host")
       case (None, Some(host)) => Some(s"https://$host")
       case _ => None
@@ -92,7 +92,7 @@ class ApplicationConfig @Inject()(override val runModeConfiguration: Configurati
 
   private def thirdPartyApplicationUrl = serviceUrl("third-party-application")(_)
 
-  private def useProxy(serviceName: String) = servicesConfig.getConfBool(s"$serviceName.use-proxy", false)
+  private def useProxy(serviceName: String) = servicesConfig.getConfBool(s"$serviceName.use-proxy",  defBool = false)
 
   private def bearerToken(serviceName: String) = servicesConfig.getConfString(s"$serviceName.bearer-token", "")
 }

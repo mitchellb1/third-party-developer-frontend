@@ -26,6 +26,7 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import service.SessionService
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import utils.WithLoggedInSession._
 
@@ -43,8 +44,8 @@ class NavigationSpec extends UnitSpec with MockitoSugar with WithFakeApplication
     val underTest = new Navigation(
       mock[SessionService],
       mock[ErrorHandler],
-      mock[ApplicationConfig]
-    )
+      stubMessagesControllerComponents()
+    )(mock[ApplicationConfig])
 
     def mockSuccessfulAuthentication(loggedInUser: Developer) =
       given(underTest.sessionService.fetch(Matchers.eq(sessionId))(any[HeaderCarrier])).willReturn(successful(Some(Session(sessionId, loggedInUser))))

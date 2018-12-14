@@ -22,7 +22,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Action
+import play.api.mvc.MessagesControllerComponents
 import service.{ApplicationService, SessionService}
 import uk.gov.hmrc.time.DateTimeUtils
 import views.html.partials
@@ -31,10 +31,10 @@ import scala.concurrent.Future
 
 @Singleton
 class TermsOfUse @Inject()(val errorHandler: ErrorHandler,
-                           override val sessionService: SessionService,
-                           override val applicationService: ApplicationService,
-                           override implicit val appConfig: ApplicationConfig)
-  extends ApplicationController() with ApplicationHelper {
+                           val sessionService: SessionService,
+                           val applicationService: ApplicationService,
+                           val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends ApplicationController(mcc) with ApplicationHelper {
 
   def termsOfUsePartial() = Action {
     Ok(partials.termsOfUse())

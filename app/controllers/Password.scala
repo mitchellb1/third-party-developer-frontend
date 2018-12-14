@@ -67,8 +67,8 @@ class Password @Inject()(val auditService: AuditService,
                          val sessionService: SessionService,
                          val connector: ThirdPartyDeveloperConnector,
                          val errorHandler: ErrorHandler,
-                         implicit val appConfig: ApplicationConfig)
-  extends LoggedOutController with PasswordChange {
+                         val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends LoggedOutController(mcc) with PasswordChange {
 
   import ErrorFormBuilder.GlobalError
 

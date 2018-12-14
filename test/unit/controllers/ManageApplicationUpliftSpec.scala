@@ -29,6 +29,7 @@ import play.api.test.{FakeRequest, Helpers, Writeables}
 import play.filters.csrf.CSRF.TokenProvider
 import service.{ApplicationService, AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.WithCSRFAddToken
@@ -60,8 +61,7 @@ class ManageApplicationUpliftSpec extends UnitSpec with MockitoSugar with WithFa
         mock[SessionService],
         mock[AuditService],
         mock[ErrorHandler],
-        mock[ApplicationConfig]
-      )
+        stubMessagesControllerComponents())(mock[ApplicationConfig])
 
       given(underTest.sessionService.fetch(mockEq(sessionId))(any[HeaderCarrier])).willReturn(Some(session))
       val sessionParams = Seq("csrfToken" -> fakeApplication.injector.instanceOf[TokenProvider].generateToken)

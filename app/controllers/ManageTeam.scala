@@ -24,6 +24,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.MessagesControllerComponents
 import service._
 
 import scala.concurrent.Future
@@ -35,7 +36,8 @@ class ManageTeam @Inject()(val sessionService: SessionService,
                            developerConnector: ThirdPartyDeveloperConnector,
                            val applicationService: ApplicationService,
                            val errorHandler: ErrorHandler,
-                           implicit val appConfig: ApplicationConfig) extends ApplicationController {
+                           val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends ApplicationController(mcc) {
 
   def manageTeam(applicationId: String, error: Option[String] = None) = teamMemberOnStandardApp(applicationId) { implicit request =>
     val application = request.application

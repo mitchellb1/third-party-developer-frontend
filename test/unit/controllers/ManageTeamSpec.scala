@@ -31,6 +31,7 @@ import play.api.test.Helpers._
 import play.filters.csrf.CSRF.TokenProvider
 import service.{ApplicationService, AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.CSRFTokenHelper._
 import utils.WithCSRFAddToken
@@ -54,8 +55,7 @@ class ManageTeamSpec extends BaseControllerSpec with SubscriptionTestHelperSugar
       mock[ThirdPartyDeveloperConnector],
       mock[ApplicationService],
       mockErrorHandler,
-      mock[ApplicationConfig]
-    )
+      stubMessagesControllerComponents())(mock[ApplicationConfig])
 
     val hc = HeaderCarrier()
 

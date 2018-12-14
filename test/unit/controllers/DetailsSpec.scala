@@ -32,6 +32,7 @@ import play.api.test.{FakeRequest, Helpers}
 import play.filters.csrf.CSRF.TokenProvider
 import service.{ApplicationService, AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.TestApplications._
 import utils.ViewHelpers._
 import utils.WithCSRFAddToken
@@ -280,8 +281,7 @@ class DetailsSpec extends BaseControllerSpec with WithCSRFAddToken {
       mock[ApplicationService],
       mock[SessionService],
       mockErrorHandler,
-      mock[ApplicationConfig]
-    )
+      stubMessagesControllerComponents())(mock[ApplicationConfig])
 
     val loggedInUser = Developer("thirdpartydeveloper@example.com", "John", "Doe")
     val sessionId = "sessionId"

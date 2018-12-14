@@ -33,6 +33,7 @@ import play.filters.csrf.CSRF.TokenProvider
 import service.AuditAction.{LoginFailedDueToInvalidPassword, LoginFailedDueToLockedAccount}
 import service.{ApplicationService, AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.CSRFTokenHelper._
 import utils.WithLoggedInSession._
@@ -60,9 +61,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
       mock[AuditService],
       mock[SessionService],
       mockErrorHandler,
-      mock[ApplicationConfig]
-    )
-
+      stubMessagesControllerComponents())(mock[ApplicationConfig])
 
     val hc = HeaderCarrier()
 

@@ -22,6 +22,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.MessagesControllerComponents
 import service._
 
 import scala.concurrent.Future
@@ -32,8 +33,8 @@ class DeleteApplication @Inject()(developerConnector: ThirdPartyDeveloperConnect
                                   val applicationService: ApplicationService,
                                   val sessionService: SessionService,
                                   val errorHandler: ErrorHandler,
-                                  implicit val appConfig: ApplicationConfig)
-  extends ApplicationController {
+                                  val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends ApplicationController(mcc) {
 
   def deleteApplication(applicationId: String, error: Option[String] = None) = teamMemberOnStandardApp(applicationId) { implicit request =>
     val view = views.html.deleteApplication(request.application, request.role)

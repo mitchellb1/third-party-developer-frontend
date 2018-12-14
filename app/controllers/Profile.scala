@@ -23,6 +23,7 @@ import javax.inject.{Inject, Singleton}
 import jp.t2v.lab.play2.stackc.RequestWithAttributes
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.MessagesControllerComponents
 import service.{ApplicationService, AuditService, SessionService}
 import views.html._
 
@@ -34,8 +35,8 @@ class Profile @Inject()(applicationService: ApplicationService,
                         val sessionService: SessionService,
                         val connector: ThirdPartyDeveloperConnector,
                         val errorHandler: ErrorHandler,
-                        implicit val appConfig: ApplicationConfig)
-  extends LoggedInController with PasswordChange {
+                        val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends LoggedInController(mcc) with PasswordChange {
 
   import ErrorFormBuilder.GlobalError
   import play.api.data._

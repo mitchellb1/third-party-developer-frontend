@@ -54,7 +54,7 @@ abstract class ApiSubscriptionFieldsConnector {
 
   def deleteFieldValues(clientId: String, apiContext: String, apiVersion: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     val url = urlSubscriptionFieldValues(clientId, apiContext, apiVersion)
-    val eventualResponse = http.DELETE(url)
+    val eventualResponse = http.DELETE[HttpResponse](url)
     eventualResponse map { _.status == NO_CONTENT } recover recovery(true)
   }
 

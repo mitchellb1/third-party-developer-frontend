@@ -15,6 +15,7 @@
  *@
 
 @import model.Crumb
+@import play.twirl.api._
 
 @(title: String,
     navTitle: Option[String] = None,
@@ -66,7 +67,7 @@
 
 @bodyEnd = {
 @uiLayouts.footer(
-    analyticsToken = applicationConfig.analyticsToken,
+    analyticsToken = Some(applicationConfig.analyticsToken),
     analyticsHost = applicationConfig.analyticsHost,
     ssoUrl = None,
     scriptElem = Some(scriptElem),

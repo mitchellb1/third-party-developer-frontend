@@ -17,7 +17,6 @@
 package config
 
 import javax.inject.{Inject, Singleton}
-
 import play.api.Configuration
 import play.api.i18n.MessagesApi
 import play.api.mvc.Request
@@ -25,8 +24,7 @@ import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 
 @Singleton
 class ErrorHandler @Inject()(val messagesApi: MessagesApi,
-                             val configuration: Configuration,
-                             implicit val appConfig: ApplicationConfig)
+                             val configuration: Configuration)(implicit val appConfig: ApplicationConfig)
   extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]) = {

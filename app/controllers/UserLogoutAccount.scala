@@ -22,7 +22,7 @@ import jp.t2v.lab.play2.auth.LoginLogout
 import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Request}
 import service.{DeskproService, SessionService}
 import views.html.signoutSurvey
 
@@ -32,7 +32,8 @@ import scala.concurrent.Future
 class UserLogoutAccount @Inject()(val deskproService: DeskproService,
                                   val sessionService: SessionService,
                                   val errorHandler: ErrorHandler,
-                                  implicit val appConfig: ApplicationConfig) extends LoggedInController with LoginLogout {
+                                  val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends LoggedInController(mcc) with LoginLogout {
 
   def logoutSurvey = loggedInAction { implicit request =>
     val page = signoutSurvey("Are you sure you want to sign out?", SignOutSurveyForm.form)

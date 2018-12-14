@@ -23,6 +23,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.MessagesControllerComponents
 import service._
 import views.html._
 
@@ -34,7 +35,8 @@ class ManageApplications @Inject()(val applicationService: ApplicationService,
                                    val sessionService: SessionService,
                                    val auditService: AuditService,
                                    val errorHandler: ErrorHandler,
-                                   implicit val appConfig: ApplicationConfig) extends ApplicationController {
+                                   val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends ApplicationController(mcc) {
 
   val detailsTab = "details"
   val credentialsTab = "credentials"

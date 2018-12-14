@@ -18,12 +18,11 @@ package controllers
 
 import config.{ApplicationConfig, ErrorHandler}
 import domain.AccessType.{PRIVILEGED, ROPC}
-import domain.{BadRequestError, Developer, Role, State}
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import domain._
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.Results._
-import play.api.mvc.{ActionFilter, ActionRefiner, Request}
+import play.api.mvc._
 import service.ApplicationService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.LoggingDetails
@@ -36,7 +35,9 @@ trait ActionBuilders {
 
   val errorHandler: ErrorHandler
   val applicationService: ApplicationService
+  val mcc: MessagesControllerComponents
   implicit val appConfig: ApplicationConfig
+  implicit val applicationMessages: Messages
 
   private implicit def hc(implicit request: Request[_]): HeaderCarrier =
     HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
@@ -45,6 +46,9 @@ trait ActionBuilders {
     MdcLoggingExecutionContext.fromLoggingDetails
 
   def applicationAction(applicationId: String, user: Developer) = new ActionRefiner[Request, ApplicationRequest] {
+
+    override protected val executionContext: ExecutionContext = mcc.executionContext
+
     override def refine[A](request: Request[A]) = {
       implicit val implicitRequest = request
 
@@ -58,6 +62,9 @@ trait ActionBuilders {
   }
 
   def notRopcOrPrivilegedAppFilter = new ActionFilter[ApplicationRequest] {
+
+    override protected val executionContext: ExecutionContext = mcc.executionContext
+
     override protected def filter[A](request: ApplicationRequest[A]) = Future.successful {
       implicit val implicitRequest = request
       implicit val implicitUser = request.user
@@ -71,6 +78,9 @@ trait ActionBuilders {
   }
 
   def appInStateProductionFilter = new ActionRefiner[ApplicationRequest, ApplicationRequest] {
+
+    override protected val executionContext: ExecutionContext = mcc.executionContext
+
     override protected def refine[A](request: ApplicationRequest[A]) = Future.successful {
       if (request.application.state.name == State.PRODUCTION) Right(request)
       else Left(BadRequest(Json.toJson(BadRequestError)))
@@ -78,6 +88,9 @@ trait ActionBuilders {
   }
 
   def appInStateTestingFilter = new ActionRefiner[ApplicationRequest, ApplicationRequest] {
+
+    override protected val executionContext: ExecutionContext = mcc.executionContext
+
     override protected def refine[A](request: ApplicationRequest[A]) = Future.successful {
       if (request.application.state.name == State.TESTING) Right(request)
       else Left(BadRequest(Json.toJson(BadRequestError)))
@@ -85,6 +98,9 @@ trait ActionBuilders {
   }
 
   def adminOnAppFilter = new ActionFilter[ApplicationRequest] {
+
+    override protected val executionContext: ExecutionContext = mcc.executionContext
+
     override protected def filter[A](request: ApplicationRequest[A]) = Future.successful {
       implicit val implicitRequest = request
 
@@ -96,6 +112,9 @@ trait ActionBuilders {
   }
 
   def adminIfProductionAppFilter = new ActionFilter[ApplicationRequest] {
+
+    override protected val executionContext: ExecutionContext = mcc.executionContext
+
     override protected def filter[A](request: ApplicationRequest[A]) = Future.successful {
       implicit val implicitRequest = request
 

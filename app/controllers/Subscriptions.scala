@@ -25,7 +25,7 @@ import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
 import play.api.libs.json.Json
-import play.api.mvc.Result
+import play.api.mvc.{MessagesControllerComponents, Result}
 import service._
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.include.{changeSubscriptionConfirmation, subscriptionFields}
@@ -42,8 +42,8 @@ class Subscriptions @Inject()(val developerConnector: ThirdPartyDeveloperConnect
                               val applicationService: ApplicationService,
                               val sessionService: SessionService,
                               val errorHandler: ErrorHandler,
-                              implicit val appConfig: ApplicationConfig)
-  extends ApplicationController with ApplicationHelper {
+                              val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends ApplicationController(mcc) with ApplicationHelper {
 
   def subscriptions(applicationId: String) = teamMemberOnStandardApp(applicationId) { implicit request =>
     apiSubscriptionsHelper.fetchPageDataFor(request.application).map { data =>

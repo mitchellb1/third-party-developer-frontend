@@ -16,17 +16,22 @@
 
 package controllers
 
+import play.api.libs.typedmap.TypedKey
 import play.api.mvc.{Call, RequestHeader}
 import play.filters.csrf.CSRF.Token
-import play.filters.csrf.CSRF.Token._
 
+//
+// TODO:  This whole object may no longer be doing the right thing
+//
 object SpliceCSRFToken {
   // Not materially different from play's play.filters.csrf.CSRF helper, but rather than
   // appending the token to the end of the query args, inserts it as the first query arg.
   def apply(call: Call)(implicit rh: RequestHeader): Call = {
-    val token = getToken(rh).getOrElse { sys.error("No CSRF token present!") }
+    val token = getToken(rh).getOrElse {
+      sys.error("No CSRF token present!")
+    }
     val url = if (call.url.contains("?")) call.url.replace("?", s"?${token.name}=${token.value}&")
-              else s"${call.url}?${token.name}=${token.value}"
+    else s"${call.url}?${token.name}=${token.value}"
 
     call.copy(url = url)
   }
@@ -34,8 +39,14 @@ object SpliceCSRFToken {
   def getToken(implicit request: RequestHeader): Option[Token] = {
     // Try to get the re-signed token first, then get the "new" token.
     for {
-      name <- request.tags.get(NameRequestTag)
-      value <- request.tags.get(ReSignedRequestTag) orElse request.tags.get(RequestTag)
+      name <- request.attrs.get(Attrs.NameRequestTag)
+      value <- request.attrs.get(Attrs.ReSignedRequestTag) orElse request.attrs.get(Attrs.RequestTag)
     } yield Token(name, value)
+  }
+
+  object Attrs {
+    val NameRequestTag: TypedKey[String] = TypedKey("CSRF_TOKEN_NAME")
+    val ReSignedRequestTag: TypedKey[String] = TypedKey("CSRF_TOKEN")
+    val RequestTag: TypedKey[String] = TypedKey("CSRF_TOKEN_RE_SIGNED")
   }
 }

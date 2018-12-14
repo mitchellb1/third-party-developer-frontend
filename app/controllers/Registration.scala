@@ -22,7 +22,7 @@ import domain.{EmailAlreadyInUse, RegistrationSuccessful}
 import javax.inject.{Inject, Singleton}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Action
+import play.api.mvc.MessagesControllerComponents
 import service.SessionService
 import uk.gov.hmrc.http.{BadRequestException, NotFoundException}
 import views.html.signIn
@@ -33,8 +33,8 @@ import scala.concurrent.Future
 class Registration @Inject()(override val sessionService: SessionService,
                              val connector: ThirdPartyDeveloperConnector,
                              val errorHandler: ErrorHandler,
-                             override implicit val appConfig: ApplicationConfig)
-  extends LoggedOutController {
+                             val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends LoggedOutController(mcc) {
 
   import ErrorFormBuilder.GlobalError
   import play.api.data._

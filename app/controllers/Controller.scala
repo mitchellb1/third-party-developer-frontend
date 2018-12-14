@@ -20,6 +20,7 @@ import config.{ApplicationConfig, AuthConfigImpl, ErrorHandler}
 import domain._
 import jp.t2v.lab.play2.auth.{AuthElement, OptionalAuthElement}
 import jp.t2v.lab.play2.stackc.{RequestAttributeKey, RequestWithAttributes}
+import play.api.i18n.Messages
 import play.api.mvc._
 import service.{ApplicationService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -38,7 +39,8 @@ trait HeaderEnricher {
     }
 }
 
-abstract class LoggedInController extends BaseController with AuthElement {
+abstract class LoggedInController(mcc: MessagesControllerComponents) extends BaseController(mcc) with AuthElement {
+
   implicit def hc(implicit request: Request[_]): HeaderCarrier = {
     val carrier = super.hc
     request match {
@@ -71,8 +73,8 @@ abstract class LoggedInController extends BaseController with AuthElement {
 
 case class ApplicationRequest[A](application: Application, role: Role, user: Developer, request: Request[A]) extends WrappedRequest[A](request)
 
-abstract class ApplicationController()
-  extends LoggedInController with ActionBuilders {
+abstract class ApplicationController(mcc: MessagesControllerComponents)
+  extends LoggedInController(mcc) with ActionBuilders {
 
   val errorHandler: ErrorHandler
   val applicationService: ApplicationService
@@ -108,8 +110,8 @@ abstract class ApplicationController()
     }
 }
 
-abstract class LoggedOutController()
-  extends BaseController() with OptionalAuthElement {
+abstract class LoggedOutController(mcc: MessagesControllerComponents)
+  extends BaseController(mcc) with OptionalAuthElement {
 
   val errorHandler: ErrorHandler
   val sessionService: SessionService
@@ -135,12 +137,13 @@ abstract class LoggedOutController()
   }
 }
 
-abstract class BaseController()
-  extends AuthConfigImpl with FrontendController with HeaderEnricher {
+abstract class BaseController(mcc: MessagesControllerComponents)
+  extends FrontendController(mcc) with AuthConfigImpl with HeaderEnricher with play.api.mvc.Controller {
 
   val errorHandler: ErrorHandler
   val sessionService: SessionService
   override implicit val appConfig: ApplicationConfig
+  implicit val executionContext = mcc.executionContext
 
   def ensureLoggedOut(implicit request: Request[_], hc: HeaderCarrier) = {
     tokenAccessor.extract(request).map(sessionService.destroy).getOrElse(Future.successful(()))

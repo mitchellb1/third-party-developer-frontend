@@ -28,6 +28,7 @@ import play.api.test.Helpers._
 import play.filters.csrf.CSRF.TokenProvider
 import service.SessionService
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 
 class RegistrationSpec extends BaseControllerSpec {
@@ -41,8 +42,8 @@ class RegistrationSpec extends BaseControllerSpec {
       mock[SessionService],
       mock[ThirdPartyDeveloperConnector],
       mockErrorHandler,
-      mock[ApplicationConfig]
-    )
+      stubMessagesControllerComponents()
+    )(mock[ApplicationConfig])
 
     val sessionParams = Seq("csrfToken" -> fakeApplication.injector.instanceOf[TokenProvider].generateToken)
   }

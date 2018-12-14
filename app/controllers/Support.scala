@@ -22,6 +22,7 @@ import jp.t2v.lab.play2.auth.OptionalAuthElement
 import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.MessagesControllerComponents
 import service.{DeskproService, SessionService}
 import views.html.{supportEnquiry, supportThankyou}
 
@@ -31,8 +32,8 @@ import scala.concurrent.Future
 class Support @Inject()(val deskproService: DeskproService,
                         val sessionService: SessionService,
                         val errorHandler: ErrorHandler,
-                        implicit val appConfig: ApplicationConfig)
-  extends BaseController with OptionalAuthElement {
+                        val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends BaseController(mcc) with OptionalAuthElement {
 
   val supportForm: Form[SupportEnquiryForm] = SupportEnquiryForm.form
 

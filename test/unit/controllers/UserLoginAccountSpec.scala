@@ -31,14 +31,15 @@ import play.api.test.Helpers._
 import play.filters.csrf.CSRF.TokenProvider
 import service.AuditAction.{LoginFailedDueToInvalidEmail, LoginFailedDueToInvalidPassword, LoginFailedDueToLockedAccount, LoginSucceeded}
 import service.{AuditAction, AuditService, SessionService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import utils.WithCSRFAddToken
 import utils.WithLoggedInSession._
 
 import scala.concurrent.Future
 import scala.concurrent.Future._
-import uk.gov.hmrc.http.HeaderCarrier
 
 class UserLoginAccountSpec extends UnitSpec with MockitoSugar with WithFakeApplication with WithCSRFAddToken {
   implicit val materializer = fakeApplication.materializer
@@ -55,7 +56,8 @@ class UserLoginAccountSpec extends UnitSpec with MockitoSugar with WithFakeAppli
     val underTest = new UserLoginAccount(mock[AuditService],
       mock[ErrorHandler],
       mock[SessionService],
-      mock[ApplicationConfig])
+      stubMessagesControllerComponents()
+    )(mock[ApplicationConfig])
 
     def mockAuthenticate(email: String, password: String, result: Future[UserAuthenticationResponse]) =
       given(underTest.sessionService.authenticate(Matchers.eq(email), Matchers.eq(password))(any[HeaderCarrier])).willReturn(result)

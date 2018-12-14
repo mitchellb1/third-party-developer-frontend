@@ -26,6 +26,7 @@ import play.api.data.Forms.{mapping, text}
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Action
 import play.api.mvc.{Action, Call}
+import play.api.mvc.{Action, MessagesControllerComponents}
 import service.AuditAction.{LoginFailedDueToInvalidEmail, LoginFailedDueToInvalidPassword, LoginFailedDueToLockedAccount, LoginSucceeded}
 import service.{AuditAction, AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -49,8 +50,8 @@ trait Auditing {
 class UserLoginAccount @Inject()(val auditService: AuditService,
                                  val errorHandler: ErrorHandler,
                                  val sessionService: SessionService,
-                                 implicit val appConfig: ApplicationConfig)
-  extends LoggedOutController with LoginLogout with Auditing {
+                                 val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends LoggedOutController(mcc) with LoginLogout with Auditing {
 
   import play.api.data._
 

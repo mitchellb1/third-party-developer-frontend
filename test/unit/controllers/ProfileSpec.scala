@@ -31,12 +31,13 @@ import play.api.test.FakeRequest
 import play.filters.csrf.CSRF.TokenProvider
 import service.AuditAction.PasswordChangeFailedDueToInvalidCredentials
 import service.{ApplicationService, AuditService, SessionService}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import utils.WithCSRFAddToken
 import utils.WithLoggedInSession._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 class ProfileSpec extends UnitSpec with MockitoSugar with WithFakeApplication with WithCSRFAddToken {
   implicit val materializer = fakeApplication.materializer
@@ -48,8 +49,8 @@ class ProfileSpec extends UnitSpec with MockitoSugar with WithFakeApplication wi
       mock[SessionService],
       mock[ThirdPartyDeveloperConnector],
       mock[ErrorHandler],
-      mock[ApplicationConfig]
-    )
+      stubMessagesControllerComponents()
+    )(mock[ApplicationConfig])
 
     val loggedInUser = Developer("thirdpartydeveloper@example.com", "John", "Doe")
     val sessionId = "sessionId"

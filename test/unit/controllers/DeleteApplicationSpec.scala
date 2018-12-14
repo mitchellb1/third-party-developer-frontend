@@ -36,6 +36,7 @@ import utils.WithLoggedInSession._
 
 import scala.concurrent.Future
 import scala.concurrent.Future.successful
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 
 class DeleteApplicationSpec extends UnitSpec with WithCSRFAddToken with MockitoSugar with WithFakeApplication {
@@ -48,8 +49,7 @@ class DeleteApplicationSpec extends UnitSpec with WithCSRFAddToken with MockitoS
       mock[ApplicationService],
       mock[SessionService],
       mock[ErrorHandler],
-      mock[ApplicationConfig]
-    )
+      stubMessagesControllerComponents())(mock[ApplicationConfig])
 
     val appId = "1234"
     val clientId = "clientIdzzz"

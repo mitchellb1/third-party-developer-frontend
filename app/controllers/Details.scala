@@ -34,8 +34,8 @@ class Details @Inject()(developerConnector: ThirdPartyDeveloperConnector,
                         val applicationService: ApplicationService,
                         val sessionService: SessionService,
                         val errorHandler: ErrorHandler,
-                        implicit val appConfig: ApplicationConfig)
-  extends ApplicationController {
+                        val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends ApplicationController(mcc) {
 
   def details(applicationId: String) = teamMemberOnStandardApp(applicationId) { implicit request =>
     Future.successful(Ok(views.html.details(request.role, request.application)))

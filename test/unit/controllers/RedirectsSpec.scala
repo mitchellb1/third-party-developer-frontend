@@ -30,6 +30,7 @@ import play.api.test.Helpers._
 import play.filters.csrf.CSRF.TokenProvider
 import service.{ApplicationService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.CSRFTokenHelper._
 import utils.TestApplications._
 import utils.ViewHelpers._
@@ -51,8 +52,8 @@ class RedirectsSpec extends BaseControllerSpec {
       mock[ApplicationService],
       mock[SessionService],
       mockErrorHandler,
-      mock[ApplicationConfig]
-    )
+      stubMessagesControllerComponents()
+    )(mock[ApplicationConfig])
 
     val sessionParams = Seq("csrfToken" -> fakeApplication.injector.instanceOf[TokenProvider].generateToken)
     val loggedOutRequest = FakeRequest().withSession(sessionParams: _*)

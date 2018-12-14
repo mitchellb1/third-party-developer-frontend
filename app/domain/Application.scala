@@ -21,6 +21,8 @@ import org.joda.time.DateTime
 import play.api.libs.json.{Format, JsError, _}
 import uk.gov.hmrc.play.json.Union
 import uk.gov.hmrc.time.DateTimeUtils
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 
 case class UpliftRequest(applicationName: String, requestedByEmailAddress: String)
 

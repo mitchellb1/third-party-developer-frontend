@@ -36,9 +36,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.WithCSRFAddToken
 import utils.WithLoggedInSession._
-
 import scala.concurrent.Future
 import scala.concurrent.Future.successful
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 class ApplicationCheckSpec extends BaseControllerSpec with SubscriptionTestHelperSugar with WithCSRFAddToken {
 
@@ -70,8 +70,7 @@ class ApplicationCheckSpec extends BaseControllerSpec with SubscriptionTestHelpe
       mock[ApiSubscriptionsHelper],
       mock[SessionService],
       mockErrorHandler,
-      mock[ApplicationConfig]
-    )
+      stubMessagesControllerComponents())(mock[ApplicationConfig])
 
     val hc = HeaderCarrier()
 
@@ -283,10 +282,10 @@ class ApplicationCheckSpec extends BaseControllerSpec with SubscriptionTestHelpe
 
       given(underTest.applicationService.requestUplift(mockEq(appId), mockEq(application.name), mockEq(loggedInUser))(any[HeaderCarrier]))
         .willAnswer(new Answer[Future[ApplicationUpliftSuccessful]]() {
-        def answer(invocation: InvocationOnMock): Future[ApplicationUpliftSuccessful] = {
-          Future.failed(new ApplicationAlreadyExists)
-        }
-      })
+          def answer(invocation: InvocationOnMock): Future[ApplicationUpliftSuccessful] = {
+            Future.failed(new ApplicationAlreadyExists)
+          }
+        })
       given(underTest.applicationService.updateCheckInformation(mockEq(appId), mockEq(expectedCheckInformation))(any[HeaderCarrier]))
         .willReturn(ApplicationUpdateSuccessful)
 

@@ -22,11 +22,9 @@ import controllers.FormKeys.clientSecretLimitExceeded
 import domain._
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
-import play.api.Play.current
 import play.api.data.Form
-import play.api.i18n.Messages.Implicits._
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import service.AuditAction.{LoginFailedDueToInvalidPassword, LoginFailedDueToLockedAccount}
 import service._
 import uk.gov.hmrc.http.{ForbiddenException, HeaderCarrier}
@@ -40,8 +38,8 @@ class Credentials @Inject()(val applicationService: ApplicationService,
                             val auditService: AuditService,
                             val sessionService: SessionService,
                             val errorHandler: ErrorHandler,
-                            implicit val appConfig: ApplicationConfig)
-  extends ApplicationController {
+                            val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends ApplicationController(mcc) {
 
   def credentials(applicationId: String, error: Option[String] = None) = teamMemberOnStandardApp(applicationId) { implicit request =>
     applicationService.fetchCredentials(applicationId).map { tokens =>
@@ -59,43 +57,43 @@ class Credentials @Inject()(val applicationService: ApplicationService,
     applicationService.addClientSecret(applicationId).map { _ =>
       result()
     } recover {
-        case _: ApplicationNotFound => NotFound(errorHandler.notFoundTemplate)
-        case _: ForbiddenException => Forbidden(errorHandler.badRequestTemplate)
-        case _: ClientSecretLimitExceeded => result(Some(clientSecretLimitExceeded))
+      case _: ApplicationNotFound => NotFound(errorHandler.notFoundTemplate)
+      case _: ForbiddenException => Forbidden(errorHandler.badRequestTemplate)
+      case _: ClientSecretLimitExceeded => result(Some(clientSecretLimitExceeded))
     }
   }
 
   def getProductionClientSecret(applicationId: String, index: Integer) =
     adminIfStandardProductionApp(applicationId, Seq(appInStateProductionFilter)) { implicit request =>
 
-    def fetchClientSecret(password: String) = {
-      val future = for {
-        _ <- developerConnector.checkPassword(PasswordCheckRequest(request.user.email, password))
-        result <- applicationService.fetchCredentials(applicationId)
-      } yield result.production.clientSecrets.zipWithIndex.find(_._2 == index).map(_._1)
+      def fetchClientSecret(password: String) = {
+        val future = for {
+          _ <- developerConnector.checkPassword(PasswordCheckRequest(request.user.email, password))
+          result <- applicationService.fetchCredentials(applicationId)
+        } yield result.production.clientSecrets.zipWithIndex.find(_._2 == index).map(_._1)
 
-      future map {
-        case Some(clientSecret) => Ok(Json.toJson(ClientSecretResponse(clientSecret.secret)))
-        case None => BadRequest(Json.toJson(BadRequestError))
-      } recover {
-        case _: InvalidCredentials => Unauthorized(Json.toJson(InvalidPasswordError))
-        case _: LockedAccount => Locked(Json.toJson(LockedAccountError))
-        case e: Throwable =>
-          Logger.error(s"Could not fetch client secret for application $applicationId", e)
-          BadRequest(Json.toJson(BadRequestError))
+        future map {
+          case Some(clientSecret) => Ok(Json.toJson(ClientSecretResponse(clientSecret.secret)))
+          case None => BadRequest(Json.toJson(BadRequestError))
+        } recover {
+          case _: InvalidCredentials => Unauthorized(Json.toJson(InvalidPasswordError))
+          case _: LockedAccount => Locked(Json.toJson(LockedAccountError))
+          case e: Throwable =>
+            Logger.error(s"Could not fetch client secret for application $applicationId", e)
+            BadRequest(Json.toJson(BadRequestError))
+        }
+      }
+
+      if (request.application.state.name != State.PRODUCTION) {
+        Logger.warn(s"Application $applicationId is not in production")
+        Future.successful(BadRequest(Json.toJson(BadRequestError)))
+      } else {
+        request.headers.get("password").map(_.trim) match {
+          case None | Some("") => Future(BadRequest(Json.toJson(PasswordRequiredError)))
+          case Some(pwd) => fetchClientSecret(pwd)
+        }
       }
     }
-
-    if (request.application.state.name != State.PRODUCTION) {
-      Logger.warn(s"Application $applicationId is not in production")
-      Future.successful(BadRequest(Json.toJson(BadRequestError)))
-    } else {
-      request.headers.get("password").map(_.trim) match {
-        case None | Some("") => Future(BadRequest(Json.toJson(PasswordRequiredError)))
-        case Some(pwd) => fetchClientSecret(pwd)
-      }
-    }
-  }
 
   def selectClientSecretsToDelete(applicationId: String): Action[AnyContent] = adminIfStandardProductionApp(applicationId) { implicit request =>
 
@@ -144,7 +142,7 @@ class Credentials @Inject()(val applicationService: ApplicationService,
     val application = request.application
 
     def handleInvalidForm(formWithErrors: Form[SelectClientSecretsToDeleteForm]) = {
-      Future(BadRequest(editapplication.selectClientSecretsToDelete(application, Seq.empty,  formWithErrors)))
+      Future(BadRequest(editapplication.selectClientSecretsToDelete(application, Seq.empty, formWithErrors)))
     }
 
     def handleValidForm(validForm: SelectClientSecretsToDeleteForm): Future[Result] = {
@@ -156,7 +154,7 @@ class Credentials @Inject()(val applicationService: ApplicationService,
             BadRequest(editapplication.selectClientSecretsToDelete(application, clientSecrets, errorForm))
           case toDelete if toDelete.length == clientSecrets.length =>
             val errorForm = SelectClientSecretsToDeleteForm.form.fill(validForm).withError(FormKeys.deleteSelectField, FormKeys.selectFewerClientSecretsKey)
-              BadRequest(editapplication.selectClientSecretsToDelete(application, clientSecrets, errorForm))
+            BadRequest(editapplication.selectClientSecretsToDelete(application, clientSecrets, errorForm))
           case secrets =>
             Ok(editapplication.deleteClientSecretConfirm(application, DeleteClientSecretsConfirmForm.form.fill(DeleteClientSecretsConfirmForm(None, secrets.mkString(",")))))
         }

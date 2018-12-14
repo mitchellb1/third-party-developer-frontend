@@ -24,6 +24,8 @@ import jp.t2v.lab.play2.stackc.RequestWithAttributes
 import play.api.data.Form
 import play.api.data.Forms.{boolean, mapping, optional, text}
 import play.api.mvc.{AnyContent, Result}
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Result}
 import service.{ApplicationService, SessionService}
 import uk.gov.hmrc.time.DateTimeUtils
 import uk.gov.voa.play.form.ConditionalMappings._
@@ -36,8 +38,8 @@ class ApplicationCheck @Inject()(val applicationService: ApplicationService,
                                  val apiSubscriptionsHelper: ApiSubscriptionsHelper,
                                  val sessionService: SessionService,
                                  val errorHandler: ErrorHandler,
-                                 implicit val appConfig: ApplicationConfig)
-  extends ApplicationController() with ApplicationHelper {
+                                 val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
+  extends ApplicationController(mcc) with ApplicationHelper {
 
   def withAppInTestingState(appId: String)(f: Application => Future[Result])(implicit request: RequestWithAttributes[AnyContent]) = {
     applicationForRequest(appId) flatMap { app =>

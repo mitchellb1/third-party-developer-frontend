@@ -16,18 +16,19 @@
 
 package domain
 
-import enumeratum.{EnumEntry, PlayEnum}
-import play.api.i18n.Messages
 import play.api.libs.json.Json
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 class InvalidCredentials extends RuntimeException("Login failed")
+
 class InvalidEmail extends RuntimeException("Invalid email")
+
 class LockedAccount extends RuntimeException("Account is locked")
+
 class UnverifiedAccount extends RuntimeException("Account is unverified")
+
 class InvalidResetCode extends RuntimeException("Invalid reset code")
-class DeskproTicketCreationFailed(reason:String) extends RuntimeException(s"Failed to create deskpro ticket: $reason") {
+
+class DeskproTicketCreationFailed(reason: String) extends RuntimeException(s"Failed to create deskpro ticket: $reason") {
   lazy val displayMessage =
     """Sorry, we're experiencing technical difficulties.
       |Your name has not been submitted. Please try again later.
@@ -41,9 +42,13 @@ object Error {
 }
 
 object LockedAccountError extends Error(ErrorCode.LOCKED_ACCOUNT, "Locked Account")
+
 object BadRequestError extends Error(ErrorCode.BAD_REQUEST, "Bad Request")
+
 object InvalidPasswordError extends Error(ErrorCode.INVALID_PASSWORD, "Invalid password")
+
 object PasswordRequiredError extends Error(ErrorCode.PASSWORD_REQUIRED, "Password is required")
-object TeamMemberAlreadyExistsInApplication extends Error(ErrorCode.USER_ALREADY_EXISTS, Messages("team.member.error.emailAddress.already.exists.field"))
+
+object TeamMemberAlreadyExistsInApplication extends Error(ErrorCode.USER_ALREADY_EXISTS, "This user is already a team member on this application")
 
 

@@ -3,8 +3,6 @@ import com.typesafe.sbt.uglify.Import._
 import com.typesafe.sbt.web.Import._
 import net.ground5hark.sbt.concat.Import._
 import play.core.PlayVersion
-import play.sbt.PlayImport._
-import play.sbt.routes.RoutesKeys.routesGenerator
 import sbt.Keys._
 import sbt.Tests.{Group, SubProcess}
 import sbt._
@@ -23,47 +21,50 @@ lazy val appDependencies: Seq[ModuleID] = compile ++ test
 lazy val t2vVersion = "0.14.2"
 lazy val cucumberVersion = "1.2.5"
 lazy val seleniumVersion = "2.53.1"
-lazy val enumeratumVersion = "1.5.11"
+lazy val enumeratumVersion = "1.5.13"
+
+val bootStrapPlayVersion = "0.32.0"
 
 lazy val compile = Seq(
-  ws,
-  "uk.gov.hmrc" %% "bootstrap-play-25" % "4.3.0",
-  "uk.gov.hmrc" %% "govuk-template" % "5.26.0-play-25",
-  "uk.gov.hmrc" %% "play-ui" % "7.27.0-play-25",
-  "uk.gov.hmrc" %% "url-builder" % "2.1.0",
-  "uk.gov.hmrc" %% "play-json-union-formatter" % "1.3.0",
-  "uk.gov.hmrc" %% "http-metrics" % "1.2.0",
-  "de.threedimensions" %% "metrics-play" % "2.5.13",
-  "jp.t2v" %% "play2-auth" % t2vVersion,
-  "uk.gov.hmrc" %% "json-encryption" % "3.2.0",
+  "uk.gov.hmrc" %% "bootstrap-play-26" % bootStrapPlayVersion,
+  "uk.gov.hmrc" %% "govuk-template" % "5.26.0-play-26",
+  "uk.gov.hmrc" %% "play-ui" % "7.27.0-play-26",
+  "uk.gov.hmrc" %% "url-builder" % "3.0.0",
+  "uk.gov.hmrc" %% "play-json-union-formatter" % "1.4.0",
+  "uk.gov.hmrc" %% "http-metrics" % "1.3.0",
+  "uk.gov.hmrc" %% "json-encryption" % "4.1.0",
   "uk.gov.hmrc" %% "emailaddress" % "2.2.0",
   "uk.gov.hmrc" %% "play-conditional-form-mapping" % "0.2.0",
-  "io.dropwizard.metrics" % "metrics-graphite" % "3.2.1",
+  "com.typesafe.play" %% "play-json-joda" % "2.6.10",
+  "io.dropwizard.metrics" % "metrics-graphite" % "3.2.6",
   "com.beachape" %% "enumeratum" % enumeratumVersion,
   "com.beachape" %% "enumeratum-play" % enumeratumVersion,
-  "com.google.zxing" % "core" % "3.2.1"
+  "com.google.zxing" % "core" % "3.3.3",
+  "de.threedimensions" %% "metrics-play" % "2.5.13",
+  "jp.t2v" %% "play2-auth" % t2vVersion
 )
 
 lazy val test = Seq(
   "info.cukes" %% "cucumber-scala" % cucumberVersion % "test",
   "info.cukes" % "cucumber-junit" % cucumberVersion % "test",
+  "uk.gov.hmrc" %% "bootstrap-play-26" % bootStrapPlayVersion % Test classifier "tests",
   "uk.gov.hmrc" %% "hmrctest" % "3.3.0" % "test",
   "junit" % "junit" % "4.12" % "test",
-  "org.jsoup" % "jsoup" % "1.10.2" % "test",
+  "org.jsoup" % "jsoup" % "1.11.3" % "test",
   "org.pegdown" % "pegdown" % "1.6.0" % "test",
   "com.typesafe.play" %% "play-test" % PlayVersion.current % "test",
-  "org.scalatest" %% "scalatest" % "2.2.6" % "test",
-  "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.5" % "test",
+  "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test",
   "org.seleniumhq.selenium" % "selenium-java" % seleniumVersion % "test",
   "com.github.tomakehurst" % "wiremock" % "1.58" % "test",
   "org.mockito" % "mockito-all" % "1.10.19" % "test",
   "jp.t2v" %% "play2-auth-test" % t2vVersion % "test",
   "org.scalaj" %% "scalaj-http" % "2.3.0" % "test",
-  "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
-  "com.github.mkolisnyk" % "cucumber-reports" % "1.0.7" % "test",
-  "net.masterthought" % "cucumber-reporting" % "3.3.0" % "test",
-  "net.masterthought" % "cucumber-sandwich" % "3.3.0" % "test",
-  "com.assertthat" % "selenium-shutterbug" % "0.2" % "test"
+  "org.scalacheck" %% "scalacheck" % "1.14.0" % "test",
+  "com.github.mkolisnyk" % "cucumber-reports" % "1.3.5" % "test",
+  "net.masterthought" % "cucumber-reporting" % "3.20.0" % "test",
+  "net.masterthought" % "cucumber-sandwich" % "3.20.0" % "test",
+  "com.assertthat" % "selenium-shutterbug" % "0.9" % "test"
 )
 lazy val overrideDependencies = Set(
   "org.seleniumhq.selenium" % "selenium-java" % seleniumVersion % "test",
@@ -102,7 +103,6 @@ lazy val microservice = Project(appName, file("."))
     parallelExecution in Test := false,
     fork in Test := false,
     retrieveManaged := true,
-    routesGenerator := InjectedRoutesGenerator,
     scalaVersion := "2.11.11",
     resolvers += Resolver.jcenterRepo
   )
