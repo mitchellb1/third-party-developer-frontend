@@ -23,7 +23,6 @@ import helpers.string._
 import javax.inject.{Inject, Singleton}
 import play.api.Play.current
 import play.api.data.Form
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.MessagesControllerComponents
 import service._
 

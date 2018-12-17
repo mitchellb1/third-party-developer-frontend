@@ -21,7 +21,6 @@ import domain.{Standard, UpdateApplicationRequest}
 import javax.inject.{Inject, Singleton}
 import play.api.Play.current
 import play.api.data.Form
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.MessagesControllerComponents
 import service.{ApplicationService, SessionService}
 

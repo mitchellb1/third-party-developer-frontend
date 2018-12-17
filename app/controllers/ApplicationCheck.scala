@@ -23,8 +23,6 @@ import javax.inject.{Inject, Singleton}
 import jp.t2v.lab.play2.stackc.RequestWithAttributes
 import play.api.data.Form
 import play.api.data.Forms.{boolean, mapping, optional, text}
-import play.api.mvc.{AnyContent, Result}
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContent, MessagesControllerComponents, Result}
 import service.{ApplicationService, SessionService}
 import uk.gov.hmrc.time.DateTimeUtils

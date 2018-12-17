@@ -21,7 +21,7 @@ import domain.UserNavLinks
 import javax.inject.{Inject, Singleton}
 import jp.t2v.lab.play2.auth.OptionalAuthElement
 import play.api.libs.json._
-import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.{MessagesControllerComponents, PlayBodyParsers}
 import service.SessionService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -33,6 +33,8 @@ class Navigation @Inject()(val sessionService: SessionService,
                            val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
 // TODO: Investigate the play.api.mvc.controller constraint required by OptionalAuthElement
   extends FrontendController(mcc) with AuthConfigImpl with HeaderEnricher with play.api.mvc.Controller with OptionalAuthElement {
+
+  override lazy val parse: PlayBodyParsers = mcc.parsers
 
   def navLinks() = AsyncStack { implicit request =>
     val username = loggedIn.map(_.displayedName)

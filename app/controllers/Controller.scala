@@ -71,7 +71,7 @@ abstract class LoggedInController(mcc: MessagesControllerComponents) extends Bas
 
 }
 
-case class ApplicationRequest[A](application: Application, role: Role, user: Developer, request: Request[A]) extends WrappedRequest[A](request)
+case class ApplicationRequest[A](application: Application, role: Role, user: Developer, request: MessagesRequest[A]) extends MessagesRequest[A](request, request.messagesApi)
 
 abstract class ApplicationController(mcc: MessagesControllerComponents)
   extends LoggedInController(mcc) with ActionBuilders {
@@ -143,6 +143,7 @@ abstract class BaseController(mcc: MessagesControllerComponents)
   val errorHandler: ErrorHandler
   val sessionService: SessionService
   override implicit val appConfig: ApplicationConfig
+  override lazy val parse: PlayBodyParsers = mcc.parsers
   implicit val executionContext = mcc.executionContext
 
   def ensureLoggedOut(implicit request: Request[_], hc: HeaderCarrier) = {

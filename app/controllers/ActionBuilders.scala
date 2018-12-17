@@ -37,7 +37,6 @@ trait ActionBuilders {
   val applicationService: ApplicationService
   val mcc: MessagesControllerComponents
   implicit val appConfig: ApplicationConfig
-  implicit val applicationMessages: Messages
 
   private implicit def hc(implicit request: Request[_]): HeaderCarrier =
     HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
@@ -45,11 +44,11 @@ trait ActionBuilders {
   private implicit def mdcExecutionContext(implicit loggingDetails: LoggingDetails): ExecutionContext =
     MdcLoggingExecutionContext.fromLoggingDetails
 
-  def applicationAction(applicationId: String, user: Developer) = new ActionRefiner[Request, ApplicationRequest] {
+  def applicationAction(applicationId: String, user: Developer) = new ActionRefiner[MessagesRequest, ApplicationRequest] {
 
     override protected val executionContext: ExecutionContext = mcc.executionContext
 
-    override def refine[A](request: Request[A]) = {
+    override def refine[A](request: MessagesRequest[A]) = {
       implicit val implicitRequest = request
 
       applicationService.fetchByApplicationId(applicationId)
