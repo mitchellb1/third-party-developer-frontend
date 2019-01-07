@@ -22,9 +22,9 @@ import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.i18n.Messages.Implicits._
+import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
-import utils.CSRFTokenHelper._
 import utils.ViewHelpers._
 
 class ProfileDeleteSubmittedSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {

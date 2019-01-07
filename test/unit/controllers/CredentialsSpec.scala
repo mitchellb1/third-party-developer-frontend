@@ -27,6 +27,7 @@ import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{never, verify, when}
 import play.api.libs.json.Json
+import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.filters.csrf.CSRF.TokenProvider
@@ -35,7 +36,6 @@ import service.{ApplicationService, AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.time.DateTimeUtils
-import utils.CSRFTokenHelper._
 import utils.WithLoggedInSession._
 
 import scala.concurrent.Future
@@ -258,7 +258,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
       given(underTest.developerConnector.checkPassword(mockEq(PasswordCheckRequest(loggedInUser.email, password)))(any[HeaderCarrier]))
         .willReturn(Future.successful(VerifyPasswordSuccessful))
 
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody("password" -> password)
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody("password" -> password).withCSRFToken
 
       val result = await(underTest.selectClientSecretsToDelete(appId)(requestWithFormBody))
 
@@ -295,7 +295,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
       given(underTest.developerConnector.checkPassword(mockEq(PasswordCheckRequest(loggedInUser.email, incorrectPassword)))(any[HeaderCarrier]))
         .willReturn(Future.failed(new InvalidCredentials))
 
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody("password" -> incorrectPassword)
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody("password" -> incorrectPassword).withCSRFToken
 
       val result = await(underTest.selectClientSecretsToDelete(appId)(requestWithFormBody))
 
@@ -307,7 +307,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
     "display the appropriate error message when nothing is entered" in new Setup {
       val emptyPassword = ""
 
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody("password" -> emptyPassword)
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody("password" -> emptyPassword).withCSRFToken
 
       val result = await(underTest.selectClientSecretsToDelete(appId)(requestWithFormBody))
 
@@ -321,7 +321,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
       given(underTest.developerConnector.checkPassword(mockEq(PasswordCheckRequest(loggedInUser.email, incorrectPassword)))(any[HeaderCarrier]))
         .willReturn(Future.failed(new LockedAccount))
 
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody("password" -> incorrectPassword)
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody("password" -> incorrectPassword).withCSRFToken
 
       val result = await(underTest.selectClientSecretsToDelete(appId)(requestWithFormBody))
 
@@ -337,7 +337,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
       given(underTest.developerConnector.checkPassword(mockEq(PasswordCheckRequest(loggedInUser.email, password)))(any[HeaderCarrier]))
         .willReturn(Future.successful(VerifyPasswordSuccessful))
 
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody("password" -> password)
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody("password" -> password).withCSRFToken
 
       val result = await(underTest.selectClientSecretsToDelete(appId)(requestWithFormBody))
 
@@ -350,7 +350,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
 
       givenTheApplicationExistWithUserRole(privilegedAppId, ADMINISTRATOR, access = Privileged())
 
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody("password" -> password)
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody("password" -> password).withCSRFToken
 
       val result = await(underTest.selectClientSecretsToDelete(privilegedAppId)(requestWithFormBody))
 
@@ -364,7 +364,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
 
       givenTheApplicationExistWithUserRole(ROPCAppId, ADMINISTRATOR, access = ROPC())
 
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody("password" -> password)
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody("password" -> password).withCSRFToken
 
       val result = await(underTest.selectClientSecretsToDelete(ROPCAppId)(requestWithFormBody))
 
@@ -376,7 +376,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
   "select client secrets to delete action" should {
     "return the confirmation page when an appropriate amount of client secrets selected" in new Setup {
 
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody("client-secret[]" -> "secret")
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody("client-secret[]" -> "secret").withCSRFToken
 
       val result = await(underTest.selectClientSecretsToDeleteAction(appId)(requestWithFormBody))
 
@@ -386,7 +386,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
     }
 
     "display error when no client secrets selected" in new Setup {
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody()
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody().withCSRFToken
 
       val result = await(underTest.selectClientSecretsToDeleteAction(appId)(requestWithFormBody))
 
@@ -395,7 +395,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
     }
 
     "display error when all client secrets selected" in new Setup {
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody("client-secret[]" -> "secret", "client-secret[]" -> "secret2")
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody("client-secret[]" -> "secret", "client-secret[]" -> "secret2").withCSRFToken
 
       val result = await(underTest.selectClientSecretsToDeleteAction(appId)(requestWithFormBody))
 
@@ -409,7 +409,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
     "return the complete page when Yes is selected" in new Setup {
       val secretsToDelete = "secret"
 
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody("deleteConfirm" -> "Yes", "clientSecretsToDelete" -> secretsToDelete)
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody("deleteConfirm" -> "Yes", "clientSecretsToDelete" -> secretsToDelete).withCSRFToken
 
       given(underTest.applicationService.deleteClientSecrets(mockEq(appId), mockEq(Seq(secretsToDelete)))(any[HeaderCarrier]))
         .willReturn(successful(ApplicationUpdateSuccessful))
@@ -424,7 +424,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
     "redirect to the credentials page when No is selected" in new Setup {
       val secretsToDelete = "secret"
 
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody("deleteConfirm" -> "No", "clientSecretsToDelete" -> secretsToDelete)
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody("deleteConfirm" -> "No", "clientSecretsToDelete" -> secretsToDelete).withCSRFToken
 
       val result = await(underTest.deleteClientSecretsAction(appId)(requestWithFormBody))
 
@@ -436,7 +436,7 @@ class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSuga
     "display error when neither Yes or No are selected" in new Setup {
       val secretsToDelete = "secret"
 
-      val requestWithFormBody = loggedInRequest.withCSRFToken.withFormUrlEncodedBody("clientSecretsToDelete" -> secretsToDelete)
+      val requestWithFormBody = loggedInRequest.withFormUrlEncodedBody("clientSecretsToDelete" -> secretsToDelete).withCSRFToken
 
       val result = await(underTest.deleteClientSecretsAction(appId)(requestWithFormBody))
 

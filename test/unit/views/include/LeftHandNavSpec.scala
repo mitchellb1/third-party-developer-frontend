@@ -19,10 +19,10 @@ package unit.views.include
 import domain._
 import org.jsoup.Jsoup
 import org.scalatestplus.play.OneServerPerSuite
+import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils
-import utils.CSRFTokenHelper._
 import utils.ViewHelpers.elementExistsByText
 
 class LeftHandNavSpec extends UnitSpec with OneServerPerSuite {

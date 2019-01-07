@@ -26,9 +26,9 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.AnyContentAsEmpty
+import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
-import utils.CSRFTokenHelper._
 import views.html.subscriptions
 
 import scala.collection.JavaConversions._

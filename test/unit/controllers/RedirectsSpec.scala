@@ -25,13 +25,13 @@ import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.verify
 import play.api.mvc.Result
+import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.filters.csrf.CSRF.TokenProvider
 import service.{ApplicationService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.CSRFTokenHelper._
 import utils.TestApplications._
 import utils.ViewHelpers._
 import utils.WithLoggedInSession._
@@ -224,25 +224,25 @@ class RedirectsSpec extends BaseControllerSpec {
       final def callAddRedirectActionController: Result = await(underTest.addRedirectAction(app.id)(loggedInRequest.withCSRFToken))
 
       final def callAddRedirectActionControllerWithUri(redirectUriToAdd: String): Result =
-        await(underTest.addRedirectAction(app.id)(loggedInRequest.withCSRFToken.withFormUrlEncodedBody("redirectUri" -> redirectUriToAdd)))
+        await(underTest.addRedirectAction(app.id)(loggedInRequest.withFormUrlEncodedBody("redirectUri" -> redirectUriToAdd).withCSRFToken))
 
       final def callDeleteRedirectController(redirectUriToDelete: String): Result =
-        await(underTest.deleteRedirect(app.id)(loggedInRequest.withCSRFToken.withFormUrlEncodedBody("redirectUri" -> redirectUriToDelete)))
+        await(underTest.deleteRedirect(app.id)(loggedInRequest.withFormUrlEncodedBody("redirectUri" -> redirectUriToDelete).withCSRFToken))
 
       final def callDeleteRedirectActionController(redirectUriToDelete: String): Result =
-        await(underTest.deleteRedirectAction(app.id)(loggedInRequest.withCSRFToken.withFormUrlEncodedBody("redirectUri" -> redirectUriToDelete)))
+        await(underTest.deleteRedirectAction(app.id)(loggedInRequest.withFormUrlEncodedBody("redirectUri" -> redirectUriToDelete).withCSRFToken))
 
       final def callDeleteRedirectActionControllerWithConfirmation(redirectUriToDelete: String, confirmed: String): Result =
         await(underTest.deleteRedirectAction(app.id)(
-          loggedInRequest.withCSRFToken.withFormUrlEncodedBody("redirectUri" -> redirectUriToDelete, "deleteRedirectConfirm" -> confirmed)))
+          loggedInRequest.withFormUrlEncodedBody("redirectUri" -> redirectUriToDelete, "deleteRedirectConfirm" -> confirmed).withCSRFToken))
 
       final def callChangeRedirectUriController(originalRedirectUri: String, newRedirectUri: String): Result =
         await(underTest.changeRedirect(app.id)(
-          loggedInRequest.withCSRFToken.withFormUrlEncodedBody("originalRedirectUri" -> originalRedirectUri, "newRedirectUri" -> newRedirectUri)))
+          loggedInRequest.withFormUrlEncodedBody("originalRedirectUri" -> originalRedirectUri, "newRedirectUri" -> newRedirectUri).withCSRFToken))
 
       final def callChangeRedirectUriActionController(originalRedirectUri: String, newRedirectUri: String): Result =
         await(underTest.changeRedirectAction(app.id)(
-          loggedInRequest.withCSRFToken.withFormUrlEncodedBody("originalRedirectUri" -> originalRedirectUri, "newRedirectUri" -> newRedirectUri)))
+          loggedInRequest.withFormUrlEncodedBody("originalRedirectUri" -> originalRedirectUri, "newRedirectUri" -> newRedirectUri).withCSRFToken))
     }
 
   }

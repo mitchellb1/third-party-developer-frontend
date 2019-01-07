@@ -17,18 +17,17 @@
 package unit.views.include
 
 import config.ApplicationConfig
-import controllers.{ChangeSubscriptionConfirmationForm, SubscriptionConfirmationForm}
-import domain.SubscriptionRedirect
-import domain._
+import controllers.ChangeSubscriptionConfirmationForm
+import domain.{SubscriptionRedirect, _}
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
+import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils
-import utils.CSRFTokenHelper._
 import utils.ViewHelpers.elementExistsByText
 
 class ChangeSubscriptionConfirmationSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {

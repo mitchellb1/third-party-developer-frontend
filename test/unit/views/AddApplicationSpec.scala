@@ -24,9 +24,9 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
+import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
-import utils.CSRFTokenHelper._
 import utils.ViewHelpers._
 
 class AddApplicationSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {

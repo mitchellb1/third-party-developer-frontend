@@ -25,11 +25,11 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.{Application, Configuration, Mode}
 import uk.gov.hmrc.play.test.UnitSpec
-import utils.CSRFTokenHelper._
 
 class LoginCSRFIntegrationSpec extends UnitSpec with GuiceOneAppPerSuite with BeforeAndAfterEach {
   private val config = Configuration("play.filters.csrf.token.sign" -> false)
@@ -76,7 +76,9 @@ class LoginCSRFIntegrationSpec extends UnitSpec with GuiceOneAppPerSuite with Be
 
     "there is no CSRF token in the request body but it is present in the headers" should {
       "redirect back to the login page" in new Setup {
-        val request = loginRequest.withCSRFToken.withFormUrlEncodedBody("emailaddress" -> userEmail, "password" -> userPassword)
+        val request = loginRequest
+          .withFormUrlEncodedBody("emailaddress" -> userEmail, "password" -> userPassword)
+          .withCSRFToken
         val result = await(route(app, request)).get
 
         status(result) shouldBe SEE_OTHER
@@ -115,9 +117,9 @@ class LoginCSRFIntegrationSpec extends UnitSpec with GuiceOneAppPerSuite with Be
                    |  }
                    |}""".stripMargin)))
 
-        val request = loginRequest.withCSRFToken
+        val request = loginRequest
           .withFormUrlEncodedBody("emailaddress" -> userEmail, "password" -> userPassword, "csrfToken" -> "test")
-
+          .withCSRFToken
         val result = await(route(app, request)).get
 
         status(result) shouldBe SEE_OTHER

@@ -23,9 +23,9 @@ import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.i18n.Messages.Implicits._
+import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.time.DateTimeUtils
-import utils.CSRFTokenHelper._
 
 class TermsOfUseSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
 
