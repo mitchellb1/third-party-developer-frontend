@@ -21,7 +21,7 @@ import controllers.ChangeSubscriptionConfirmationForm
 import domain.{SubscriptionRedirect, _}
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
 import play.api.test.CSRFTokenHelper.CSRFRequest
@@ -30,7 +30,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.ViewHelpers.elementExistsByText
 
-class ChangeSubscriptionConfirmationSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class ChangeSubscriptionConfirmationSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
   val request = FakeRequest().withCSRFToken

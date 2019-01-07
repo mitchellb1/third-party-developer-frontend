@@ -21,13 +21,14 @@ import controllers.TermsOfUseForm
 import domain._
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages.Implicits._
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.time.DateTimeUtils
 
-class TermsOfUseSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
+class TermsOfUseSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
 

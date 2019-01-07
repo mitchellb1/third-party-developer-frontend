@@ -21,12 +21,13 @@ import domain._
 import junit.framework.TestCase
 import org.mockito.BDDMockito.given
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import uk.gov.hmrc.time.DateTimeUtils
 
-class HotjarTemplateSpec extends PlaySpec with MockitoSugar with OneAppPerSuite {
+class HotjarTemplateSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite {
 
   val applicationId = "applicationId"
   val mockRequest = mock[Request[Any]]
@@ -35,18 +36,18 @@ class HotjarTemplateSpec extends PlaySpec with MockitoSugar with OneAppPerSuite 
   val developer = Developer("Test", "Test", "Test", None)
 
   val application =
-          Application(
-          "APPLICATION_ID",
-          "CLIENT_ID",
-          "APPLICATION NAME",
-          DateTimeUtils.now,
-          Environment.PRODUCTION,
-          Some("APPLICATION DESCRIPTION"),
-          Set(Collaborator("sample@example.com", Role.ADMINISTRATOR), Collaborator("someone@example.com", Role.DEVELOPER)),
-          Standard(),
-          true,
-          ApplicationState(State.TESTING, None, None, DateTimeUtils.now)
-        )
+    Application(
+      "APPLICATION_ID",
+      "CLIENT_ID",
+      "APPLICATION NAME",
+      DateTimeUtils.now,
+      Environment.PRODUCTION,
+      Some("APPLICATION DESCRIPTION"),
+      Set(Collaborator("sample@example.com", Role.ADMINISTRATOR), Collaborator("someone@example.com", Role.DEVELOPER)),
+      Standard(),
+      true,
+      ApplicationState(State.TESTING, None, None, DateTimeUtils.now)
+    )
 
   "nameSubmittedPage" must {
 
@@ -63,16 +64,16 @@ class HotjarTemplateSpec extends PlaySpec with MockitoSugar with OneAppPerSuite 
       given(mockApplicationConfig.hotjarEnabled) willReturn false
 
       val renderedHtml = views.html.editapplication.nameSubmitted.render(applicationId, application, mockRequest, developer, mockMessages, mockApplicationConfig, "credentials")
-      renderedHtml.body must not include("hotjar")
-      renderedHtml.body must not include("hjid:123")
+      renderedHtml.body must not include ("hotjar")
+      renderedHtml.body must not include ("hjid:123")
     }
 
     "render without hotjar script when hotjar id is defined and hotjar feature is disabled" in new TestCase {
       given(mockApplicationConfig.hotjarEnabled) willReturn false
 
       val renderedHtml = views.html.editapplication.nameSubmitted.render(applicationId, application, mockRequest, developer, mockMessages, mockApplicationConfig, "credentials")
-      renderedHtml.body must not include("hotjar")
-      renderedHtml.body must not include("hjid:123")
+      renderedHtml.body must not include ("hotjar")
+      renderedHtml.body must not include ("hjid:123")
     }
   }
 
