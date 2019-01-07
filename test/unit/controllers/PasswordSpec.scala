@@ -29,6 +29,7 @@ import play.filters.csrf.CSRF.TokenProvider
 import play.twirl.api.HtmlFormat
 import service.{AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.WithCSRFAddToken
 
 import scala.concurrent.Future
@@ -43,14 +44,14 @@ class PasswordSpec extends BaseControllerSpec with WithCSRFAddToken {
     val mockConnector = mock[ThirdPartyDeveloperConnector]
     val mockSessionService = mock[SessionService]
     val mockAuditService = mock[AuditService]
-    val mockAppConfig = mock[ApplicationConfig]
+    implicit val mockAppConfig = mock[ApplicationConfig]
 
     val underTest = new Password(
       mock[AuditService],
       mock[SessionService],
       mockConnector,
       mockErrorHandler,
-      mock[ApplicationConfig]
+      stubMessagesControllerComponents()
     )
 
     def mockRequestResetFor(email: String) =

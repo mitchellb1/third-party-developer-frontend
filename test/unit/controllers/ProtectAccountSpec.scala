@@ -26,14 +26,15 @@ import org.jsoup.Jsoup
 import org.mockito.BDDMockito._
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.scalatest.mockito.MockitoSugar
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.mvc.Result
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import play.filters.csrf.CSRF.TokenProvider
 import qr.{OtpAuthUri, QRCode}
 import service.{MFAResponse, MFAService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import utils.WithCSRFAddToken
 import utils.WithLoggedInSession._
@@ -57,7 +58,9 @@ class ProtectAccountSpec extends UnitSpec with MockitoSugar with WithFakeApplica
       mock[OtpAuthUri],
       mock[MFAService],
       mock[SessionService],
-      mock[ErrorHandler])(mock[ApplicationConfig]) {
+      mock[ErrorHandler],
+      stubMessagesControllerComponents()
+    )(mock[ApplicationConfig]) {
       override val qrCode = mock[QRCode]
     }
 
