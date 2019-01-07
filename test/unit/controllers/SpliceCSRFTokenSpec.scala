@@ -31,11 +31,8 @@ class SpliceCSRFTokenSpec extends UnitSpec with MockitoSugar {
   val reSignedRequestTag: TypedKey[String] = TypedKey("CSRF_TOKEN")
   val requestTag: TypedKey[String] = TypedKey("CSRF_TOKEN_RE_SIGNED")
 
-  trait SetupWithNoCSRFToken {
+  trait SetupWithCSRFToken {
     implicit val rh = mock[RequestHeader]
-  }
-
-  trait SetupWithCSRFToken extends SetupWithNoCSRFToken {
     when(rh.attrs.get(nameRequestTag)).thenReturn(Some("csrfToken"))
     when(rh.attrs.get(requestTag)).thenReturn(Some("token"))
   }
@@ -54,14 +51,12 @@ class SpliceCSRFTokenSpec extends UnitSpec with MockitoSugar {
       caught.getMessage shouldBe "No CSRF token present!"
     }
 
-    "insert a CSRF token to a call at the start of the query string" in new SetupWithCSRFToken {}
-    {
+    "insert a CSRF token to a call at the start of the query string" in new SetupWithCSRFToken {
       val call = SpliceCSRFToken(Call(method = "POST", url = "https://example.com/abcd?parameter=efgh"))
       call.url shouldBe "https://example.com/abcd?csrfToken=token&parameter=efgh"
     }
 
-    "add a CSRF token to a call with no query params" in new SetupWithCSRFToken {}
-    {
+    "add a CSRF token to a call with no query params" in new SetupWithCSRFToken {
       val call = SpliceCSRFToken(Call(method = "POST", url = "https://example.com/abcd"))
       call.url shouldBe "https://example.com/abcd?csrfToken=token"
     }
