@@ -22,9 +22,7 @@ import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
 
 @Singleton
-class ApplicationConfig @Inject()(override val runModeConfiguration: Configuration, runMode: RunMode, servicesConfig: ServicesConfig) {
-
-  protected def mode = environment.mode
+class ApplicationConfig @Inject()(runModeConfiguration: Configuration, runMode: RunMode, servicesConfig: ServicesConfig) {
 
   val contactFormServiceIdentifier = "API"
   val betaFeedbackUrl = "/contact/beta-feedback"

@@ -23,6 +23,7 @@ import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.MessagesControllerComponents
 import qr.{OtpAuthUri, QRCode}
 import service.{MFAService, SessionService}
 import views.html.protectAccountRemovalAccessCode
@@ -34,8 +35,9 @@ class ProtectAccount @Inject()(val connector: ThirdPartyDeveloperConnector,
                                val otpAuthUri: OtpAuthUri,
                                val mfaService: MFAService,
                                val sessionService: SessionService,
-                               val errorHandler: ErrorHandler)(
-                               implicit val appConfig: ApplicationConfig) extends LoggedInController {
+                               val errorHandler: ErrorHandler,
+                               mcc: MessagesControllerComponents)(
+                               implicit val appConfig: ApplicationConfig) extends LoggedInController(mcc) {
 
   private val scale = 7
   val qrCode = QRCode(scale)
