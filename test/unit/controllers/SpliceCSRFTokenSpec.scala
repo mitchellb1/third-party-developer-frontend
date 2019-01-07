@@ -20,14 +20,32 @@ package unit.controllers
 import controllers.SpliceCSRFToken
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
+import play.api.libs.typedmap.TypedKey
 import play.api.mvc.{Call, RequestHeader}
 import play.api.test.FakeRequest
-import play.filters.csrf.CSRF.Token._
 import uk.gov.hmrc.play.test.UnitSpec
 
 class SpliceCSRFTokenSpec extends UnitSpec with MockitoSugar {
 
+  val nameRequestTag: TypedKey[String] = TypedKey("CSRF_TOKEN_NAME")
+  val reSignedRequestTag: TypedKey[String] = TypedKey("CSRF_TOKEN")
+  val requestTag: TypedKey[String] = TypedKey("CSRF_TOKEN_RE_SIGNED")
+
+  trait SetupWithNoCSRFToken {
+    implicit val rh = mock[RequestHeader]
+  }
+
+  trait SetupWithCSRFToken extends SetupWithNoCSRFToken {
+    when(rh.attrs.get(nameRequestTag)).thenReturn(Some("csrfToken"))
+    when(rh.attrs.get(requestTag)).thenReturn(Some("token"))
+  }
+
+  trait SetupWithReSignedCSRFToken extends SetupWithCSRFToken {
+    when(rh.attrs.get(reSignedRequestTag)).thenReturn(Some("resigned"))
+  }
+
   "SpliceCSRFTokenSpec" should {
+
     "fail if no CSRF token in scope" in {
       implicit val request = FakeRequest()
       val caught = intercept[RuntimeException] {
@@ -36,23 +54,19 @@ class SpliceCSRFTokenSpec extends UnitSpec with MockitoSugar {
       caught.getMessage shouldBe "No CSRF token present!"
     }
 
-    "insert a CSRF token to a call at the start of the query string" in {
-      implicit val rh = mock[RequestHeader]
-      when(rh.tags).thenReturn(Map(NameRequestTag -> "csrfToken", RequestTag -> "token"))
+    "insert a CSRF token to a call at the start of the query string" in new SetupWithCSRFToken {}
+    {
       val call = SpliceCSRFToken(Call(method = "POST", url = "https://example.com/abcd?parameter=efgh"))
       call.url shouldBe "https://example.com/abcd?csrfToken=token&parameter=efgh"
     }
 
-    "add a CSRF token to a call with no query params" in {
-      implicit val rh = mock[RequestHeader]
-      when(rh.tags).thenReturn(Map(NameRequestTag -> "csrfToken", RequestTag -> "token"))
+    "add a CSRF token to a call with no query params" in new SetupWithCSRFToken {}
+    {
       val call = SpliceCSRFToken(Call(method = "POST", url = "https://example.com/abcd"))
       call.url shouldBe "https://example.com/abcd?csrfToken=token"
     }
 
-    "add a CSRF token (preferring re-signed request tag) to a call with no query params" in {
-      implicit val rh = mock[RequestHeader]
-      when(rh.tags).thenReturn(Map(NameRequestTag -> "csrfToken", ReSignedRequestTag -> "resigned", RequestTag -> "token"))
+    "add a CSRF token (preferring re-signed request tag) to a call with no query params" in new SetupWithReSignedCSRFToken {
       val call = SpliceCSRFToken(Call(method = "POST", url = "https://example.com/abcd"))
       call.url shouldBe "https://example.com/abcd?csrfToken=resigned"
     }
