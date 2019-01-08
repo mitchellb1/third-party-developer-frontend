@@ -23,9 +23,9 @@ import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
@@ -33,7 +33,7 @@ import views.html.subscriptions
 
 import scala.collection.JavaConversions._
 
-class SubscriptionsSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class SubscriptionsSpec extends UnitSpec with GuiceOneAppPerSuite with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
 
@@ -70,7 +70,7 @@ class SubscriptionsSpec extends UnitSpec with OneServerPerSuite with MockitoSuga
 
     val sandboxApplicationTesting = buildApplication(ApplicationState.testing, Environment.SANDBOX)
 
-    def renderPageForApplicationAndRole(application: Application, role: Role, pageData: PageData, request: FakeRequest[AnyContentAsEmpty.type]) = {
+    def renderPageForApplicationAndRole(application: Application, role: Role, pageData: PageData, request: Request[AnyContentAsEmpty.type]) = {
       subscriptions.render(
         role,
         pageData,
