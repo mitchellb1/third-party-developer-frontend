@@ -40,7 +40,7 @@ import utils.BrowserStackCaps
 import scala.util.{Properties, Try}
 
 
-trait Env extends ScalaDsl with EN with Matchers with BrowserStackCaps{
+trait Env extends ScalaDsl with EN with Matchers with BrowserStackCaps {
   var passedTestCount: Int = 0
   var failedTestCount: Int = 0
   // please do not change this port as it is used for acceptance tests
@@ -94,7 +94,7 @@ trait Env extends ScalaDsl with EN with Matchers with BrowserStackCaps{
   }
 
   def javascriptEnabled: Boolean = {
-    val jsEnabled:String = System.getProperty("javascriptEnabled", "true")
+    val jsEnabled: String = System.getProperty("javascriptEnabled", "true")
     if (jsEnabled == null) System.getProperties.setProperty("javascriptEnabled", "true")
     if (jsEnabled != "false") {
       true
@@ -149,7 +149,7 @@ trait Env extends ScalaDsl with EN with Matchers with BrowserStackCaps{
 
   def startServer() {
     val application = GuiceApplicationBuilder().configure("run.mode" -> "Stub").in(Mode.Prod).build()
-    server = new TestServer(port, application)
+    server = TestServer(port, application)
     server.start()
   }
 }
