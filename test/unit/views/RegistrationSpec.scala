@@ -21,23 +21,24 @@ import controllers.RegistrationForm
 import org.jsoup.Jsoup
 import org.scalatest.Matchers
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits._
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.mvc.Flash
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.ViewHelpers._
 
-class RegistrationSpec extends UnitSpec with Matchers with MockitoSugar with OneServerPerSuite {
+class RegistrationSpec extends UnitSpec with Matchers with MockitoSugar with GuiceOneServerPerSuite {
   "Registration page" should {
 
     val appConfig = mock[ApplicationConfig]
     val flash = mock[Flash]
     val request = FakeRequest().withCSRFToken
+    implicit val messages = new DefaultMessagesApi().preferred(request)
 
     "render with no errors when the form is valid" in {
-      val page = views.html.registration.render(RegistrationForm.form, flash, request, applicationMessages, appConfig)
+      val page = views.html.registration.render(RegistrationForm.form, flash, request, messages, appConfig)
       page.contentType should include("text/html")
 
       val document = Jsoup.parse(page.body)
@@ -54,7 +55,7 @@ class RegistrationSpec extends UnitSpec with Matchers with MockitoSugar with One
         .withError("confirmpassword", "Confirm password error message")
         .withError("organisation", "Organisation error message")
 
-      val page = views.html.registration.render(formWithErrors, flash, request, applicationMessages, appConfig)
+      val page = views.html.registration.render(formWithErrors, flash, request, messages, appConfig)
       page.contentType should include("text/html")
 
       val document = Jsoup.parse(page.body)

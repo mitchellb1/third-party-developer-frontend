@@ -21,15 +21,15 @@ import controllers.AddApplicationForm
 import domain.Developer
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.Form
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.ViewHelpers._
 
-class AddApplicationSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class AddApplicationSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
 
   val loggedInUser = Developer("admin@example.com", "firstName1", "lastName1")
   val appConfig = mock[ApplicationConfig]
@@ -38,7 +38,8 @@ class AddApplicationSpec extends UnitSpec with OneServerPerSuite with MockitoSug
 
     def renderPage(form: Form[AddApplicationForm]) = {
       val request = FakeRequest().withCSRFToken
-      views.html.addApplication.render(form, request, loggedInUser, applicationMessages, appConfig, "nav-section")
+      implicit val messages = new DefaultMessagesApi().preferred(request)
+      views.html.addApplication.render(form, request, loggedInUser, messages, appConfig, "nav-section")
     }
 
     "show an error when application name is invalid" in {

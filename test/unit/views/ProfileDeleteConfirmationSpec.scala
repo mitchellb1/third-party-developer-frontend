@@ -21,24 +21,25 @@ import controllers.DeleteProfileForm
 import domain._
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits._
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.ViewHelpers._
 
-class ProfileDeleteConfirmationSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class ProfileDeleteConfirmationSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
 
   "Profile delete confirmation page" should {
     "render with no errors" in {
       val request = FakeRequest().withCSRFToken
+      implicit val messages = new DefaultMessagesApi().preferred(request)
 
       val developer = Developer("Test", "Test", "Test", None)
 
-      val page = views.html.profileDeleteConfirmation.render(DeleteProfileForm.form, request, developer, appConfig, applicationMessages, "details")
+      val page = views.html.profileDeleteConfirmation.render(DeleteProfileForm.form, request, developer, appConfig, messages, "details")
       page.contentType should include("text/html")
 
       val document = Jsoup.parse(page.body)
@@ -49,12 +50,13 @@ class ProfileDeleteConfirmationSpec extends UnitSpec with OneServerPerSuite with
 
     "render with error when no radio button has been selected" in {
       val request = FakeRequest().withCSRFToken
+      implicit val messages = new DefaultMessagesApi().preferred(request)
 
       val developer = Developer("Test", "Test", "Test", None)
 
       val formWithErrors = DeleteProfileForm.form.withError("confirmation", "Tell us if you want us to delete your account")
 
-      val page = views.html.profileDeleteConfirmation.render(formWithErrors, request, developer, appConfig, applicationMessages, "details")
+      val page = views.html.profileDeleteConfirmation.render(formWithErrors, request, developer, appConfig, messages, "details")
       page.contentType should include("text/html")
 
       val document = Jsoup.parse(page.body)

@@ -23,14 +23,16 @@ import org.joda.time.format.DateTimeFormat
 import org.jsoup.Jsoup
 import org.scalatest.Matchers
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat.Appendable
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils
 
-class TermsOfUseSpec extends UnitSpec with Matchers with MockitoSugar with OneServerPerSuite {
+class TermsOfUseSpec extends UnitSpec with Matchers with MockitoSugar with GuiceOneServerPerSuite {
+
   case class Page(doc: Appendable) {
     lazy val body = Jsoup.parse(doc.body)
     lazy val title = body.title
@@ -43,6 +45,7 @@ class TermsOfUseSpec extends UnitSpec with Matchers with MockitoSugar with OneSe
   "Terms of use view" when {
     implicit val mockConfig = mock[ApplicationConfig]
     implicit val request = FakeRequest().withCSRFToken
+    implicit val messages = new DefaultMessagesApi().preferred(request)
     implicit val loggedIn = Developer("developer@example.com", "Joe", "Bloggs")
     implicit val navSection = "details"
 
@@ -64,7 +67,7 @@ class TermsOfUseSpec extends UnitSpec with Matchers with MockitoSugar with OneSe
       }
 
       "set the title and header to 'Terms of use'" in new Setup {
-        page.title should startWith ("Terms of use")
+        page.title should startWith("Terms of use")
         page.header.text shouldBe "Terms of use"
       }
 
@@ -72,7 +75,7 @@ class TermsOfUseSpec extends UnitSpec with Matchers with MockitoSugar with OneSe
         page.alert.text shouldBe s"Terms of use accepted on $expectedTimeStamp by $emailAddress."
       }
 
-      "render the terms of use" in new Setup  {
+      "render the terms of use" in new Setup {
         page.termsOfUse should not be null
       }
 
@@ -89,7 +92,7 @@ class TermsOfUseSpec extends UnitSpec with Matchers with MockitoSugar with OneSe
       }
 
       "set the title and header to 'Terms of use'" in new Setup {
-        page.title should startWith ("Agree to our terms of use")
+        page.title should startWith("Agree to our terms of use")
         page.header.text shouldBe "Agree to our terms of use"
       }
 

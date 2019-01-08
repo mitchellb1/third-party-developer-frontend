@@ -21,17 +21,18 @@ import controllers.ProfileForm
 import domain._
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits._
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.ViewHelpers._
 
-class ProfileSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class ProfileSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
   private val request = FakeRequest().withCSRFToken
+  implicit val messages = new DefaultMessagesApi().preferred(request)
 
   val developer = Developer("developer@example.com", "FirstName", "LastName", Some("TestOrganisation"))
 
@@ -39,7 +40,7 @@ class ProfileSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
 
     "render" in {
 
-      val page = views.html.profile.render(request, developer, appConfig, applicationMessages, "details")
+      val page = views.html.profile.render(request, developer, appConfig, messages, "details")
       page.contentType should include("text/html")
 
       val document = Jsoup.parse(page.body)
@@ -57,7 +58,7 @@ class ProfileSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
         .withError("firstname", "First name error message")
         .withError("lastname", "Last name error message")
 
-      val page = views.html.changeProfile.render(formWithErrors, request, developer, appConfig, applicationMessages, "details")
+      val page = views.html.changeProfile.render(formWithErrors, request, developer, appConfig, messages, "details")
       page.contentType should include("text/html")
 
       val document = Jsoup.parse(page.body)

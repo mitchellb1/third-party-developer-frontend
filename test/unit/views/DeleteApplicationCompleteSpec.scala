@@ -20,8 +20,8 @@ import config.ApplicationConfig
 import domain._
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits.applicationMessages
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
@@ -29,7 +29,7 @@ import uk.gov.hmrc.time.DateTimeUtils
 import utils.ViewHelpers.elementExistsByText
 
 
-class DeleteApplicationCompleteSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class DeleteApplicationCompleteSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
 
@@ -37,6 +37,7 @@ class DeleteApplicationCompleteSpec extends UnitSpec with OneServerPerSuite with
     "render with no errors" in {
 
       val request = FakeRequest().withCSRFToken
+      implicit val messages = new DefaultMessagesApi().preferred(request)
 
       val appId = "1234"
       val clientId = "clientId123"
@@ -46,7 +47,7 @@ class DeleteApplicationCompleteSpec extends UnitSpec with OneServerPerSuite with
         access = Standard(redirectUris = Seq("https://red1", "https://red2"), termsAndConditionsUrl = Some("http://tnc-url.com")))
 
 
-      val page = views.html.deleteApplicationComplete.render(application, request, loggedInUser, applicationMessages, appConfig, "details")
+      val page = views.html.deleteApplicationComplete.render(application, request, loggedInUser, messages, appConfig, "details")
       page.contentType should include("text/html")
 
       val document = Jsoup.parse(page.body)

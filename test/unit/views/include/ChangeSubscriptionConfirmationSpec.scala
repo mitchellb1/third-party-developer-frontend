@@ -23,7 +23,7 @@ import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.Form
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
@@ -34,6 +34,7 @@ class ChangeSubscriptionConfirmationSpec extends UnitSpec with GuiceOneServerPer
 
   val appConfig = mock[ApplicationConfig]
   val request = FakeRequest().withCSRFToken
+  implicit val messages = new DefaultMessagesApi().preferred(request)
 
   val applicationId = "1234"
   val clientId = "clientId123"
@@ -60,7 +61,7 @@ class ChangeSubscriptionConfirmationSpec extends UnitSpec with GuiceOneServerPer
       SubscriptionRedirect.API_SUBSCRIPTIONS_PAGE.toString,
       request,
       loggedInUser,
-      applicationMessages,
+      messages,
       appConfig,
       "details"
     )

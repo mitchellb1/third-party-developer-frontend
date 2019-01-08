@@ -16,22 +16,22 @@
 
 package unit.views
 
+import config.ApplicationConfig
+import controllers.routes
+import domain._
 import org.joda.time.format.DateTimeFormat
 import org.jsoup.Jsoup
 import org.scalatest.Matchers
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits.applicationMessages
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.FakeRequest
-import play.twirl.api.HtmlFormat.Appendable // ???
+import play.twirl.api.HtmlFormat.Appendable
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils
 
-import config.ApplicationConfig
-import controllers.routes
-import domain._
+class DetailsSpec extends UnitSpec with Matchers with MockitoSugar with GuiceOneServerPerSuite {
 
-class DetailsSpec extends UnitSpec with Matchers with MockitoSugar with OneServerPerSuite {
   case class Page(doc: Appendable) {
     lazy val body = Jsoup.parse(doc.body)
     lazy val warning = body.getElementById("termsOfUseWarning")
@@ -43,6 +43,7 @@ class DetailsSpec extends UnitSpec with Matchers with MockitoSugar with OneServe
   "Application details view" when {
     implicit val mockConfig = mock[ApplicationConfig]
     implicit val request = FakeRequest()
+    implicit val messages = new DefaultMessagesApi().preferred(request)
     implicit val loggedIn = Developer("developer@example.com", "Joe", "Bloggs")
     implicit val navSection = "details"
 

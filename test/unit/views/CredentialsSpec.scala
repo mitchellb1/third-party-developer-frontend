@@ -23,8 +23,8 @@ import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits._
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
@@ -33,7 +33,8 @@ import views.html.credentials
 
 import scala.collection.JavaConversions._
 
-class CredentialsSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class CredentialsSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
+
   trait Setup {
     val appConfig = mock[ApplicationConfig]
 
@@ -47,6 +48,8 @@ class CredentialsSpec extends UnitSpec with OneServerPerSuite with MockitoSugar 
   "Credentials page" should {
 
     val request = FakeRequest().withCSRFToken
+
+    implicit val messages = new DefaultMessagesApi().preferred(request)
 
     val developer = Developer("Test", "Test", "Test", None)
 
@@ -65,7 +68,7 @@ class CredentialsSpec extends UnitSpec with OneServerPerSuite with MockitoSugar 
       Some("Test Application"),
       Set.empty,
       Standard(),
-      false,
+      trusted = false,
       ApplicationState.testing,
       None
     )
@@ -78,7 +81,7 @@ class CredentialsSpec extends UnitSpec with OneServerPerSuite with MockitoSugar 
 
     "render" in new Setup {
 
-      val page = credentials.render(Role.ADMINISTRATOR, application, emptyTokens, form, request, developer, applicationMessages, appConfig, "credentials")
+      val page = credentials.render(Role.ADMINISTRATOR, application, emptyTokens, form, request, developer, messages, appConfig, "credentials")
 
       page.contentType should include("text/html")
 
@@ -91,9 +94,10 @@ class CredentialsSpec extends UnitSpec with OneServerPerSuite with MockitoSugar 
 
       val tokensWithTwoClientSecrets = emptyTokens.copy(production = EnvironmentToken("", Seq(clientSecret1, clientSecret2), ""))
       val productionApp = application.copy(state = ApplicationState.production("requester", "verificationCode"))
-      val page = credentials.render(Role.ADMINISTRATOR, productionApp, tokensWithTwoClientSecrets, form, request, developer, applicationMessages, appConfig, "credentials")
+      val page = credentials.render(
+        Role.ADMINISTRATOR, productionApp, tokensWithTwoClientSecrets, form, request, developer, messages, appConfig, "credentials")
 
-      page.contentType should include ("text/html")
+      page.contentType should include("text/html")
 
       val document = Jsoup.parse(page.body)
       elementExistsByText(document, "p", "To delete a client secret, you must add one first") shouldBe false
@@ -104,7 +108,8 @@ class CredentialsSpec extends UnitSpec with OneServerPerSuite with MockitoSugar 
 
       val tokensWithOneClientSecret = emptyTokens.copy(production = EnvironmentToken("", Seq(clientSecret1), ""))
       val productionApp = application.copy(state = ApplicationState.production("requester", "verificationCode"))
-      val page = credentials.render(Role.ADMINISTRATOR, productionApp, tokensWithOneClientSecret, form, request, developer, applicationMessages, appConfig, "credentials")
+      val page = credentials.render(
+        Role.ADMINISTRATOR, productionApp, tokensWithOneClientSecret, form, request, developer, messages, appConfig, "credentials")
 
       page.contentType should include("text/html")
 
@@ -117,9 +122,10 @@ class CredentialsSpec extends UnitSpec with OneServerPerSuite with MockitoSugar 
 
       val tokensWithTwoClientSecrets = emptyTokens.copy(production = EnvironmentToken("", Seq(clientSecret1, clientSecret2), ""))
 
-      val page = credentials.render(Role.ADMINISTRATOR, sandboxApplication, tokensWithTwoClientSecrets, form, request, developer, applicationMessages, appConfig, "credentials")
+      val page = credentials.render(
+        Role.ADMINISTRATOR, sandboxApplication, tokensWithTwoClientSecrets, form, request, developer, messages, appConfig, "credentials")
 
-      page.contentType should include ("text/html")
+      page.contentType should include("text/html")
 
       val document = Jsoup.parse(page.body)
       elementExistsByText(document, "p", "To delete a client secret, you must add one first") shouldBe false
@@ -130,7 +136,8 @@ class CredentialsSpec extends UnitSpec with OneServerPerSuite with MockitoSugar 
 
       val tokensWithOneClientSecret = emptyTokens.copy(production = EnvironmentToken("", Seq(clientSecret1), ""))
 
-      val page = credentials.render(Role.ADMINISTRATOR, sandboxApplication, tokensWithOneClientSecret, form, request, developer, applicationMessages, appConfig, "credentials")
+      val page = credentials.render(
+        Role.ADMINISTRATOR, sandboxApplication, tokensWithOneClientSecret, form, request, developer, messages, appConfig, "credentials")
 
       page.contentType should include("text/html")
 

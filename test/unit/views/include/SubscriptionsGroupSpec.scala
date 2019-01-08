@@ -22,15 +22,16 @@ import domain._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits._
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils
 
-class SubscriptionsGroupSpec extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class SubscriptionsGroupSpec extends UnitSpec with MockitoSugar with GuiceOneServerPerSuite {
   val request = FakeRequest().withCSRFToken
+  implicit val messages = new DefaultMessagesApi().preferred(request)
   val appConfig = mock[ApplicationConfig]
   val loggedInUser = Developer("givenname.familyname@example.com", "Givenname", "Familyname")
   val applicationId = "1234"
@@ -39,16 +40,28 @@ class SubscriptionsGroupSpec extends UnitSpec with MockitoSugar with OneServerPe
   val apiName = "Test API"
   val apiContext = "test"
   val apiVersion = "1.0"
-  val subscriptionStatus = APISubscriptionStatus(apiName, apiName, apiContext, APIVersion(apiVersion, APIStatus.STABLE, None), false, false)
+  val subscriptionStatus =
+    APISubscriptionStatus(apiName, apiName, apiContext, APIVersion(apiVersion, APIStatus.STABLE, None), subscribed = false, requiresTrust = false)
   val apiSubscriptions = Seq(APISubscriptions(apiName, apiName, apiContext, Seq(subscriptionStatus)))
 
   case class Page(role: Role, environment: Environment, state: ApplicationState) {
     lazy val body: Document = {
       val application = Application(applicationId, clientId, applicationName, DateTimeUtils.now, environment, Some("Description 1"),
         Set(Collaborator(loggedInUser.email, role)), state = state,
-        access = Standard(redirectUris = Seq("https://red1.example.com", "https://red2.example.con"), termsAndConditionsUrl = Some("http://tnc-url.example.com")))
+        access = Standard(
+          redirectUris = Seq("https://red1.example.com", "https://red2.example.con"), termsAndConditionsUrl = Some("http://tnc-url.example.com")))
 
-      Jsoup.parse(views.html.include.subscriptionsGroup.render(role, application, apiSubscriptions, hasAnySubscriptions = true, group = "Example", afterSubscriptionRedirectTo = SubscriptionRedirect.MANAGE_PAGE, applicationMessages, appConfig, request).body)
+      Jsoup.parse(views.html.include.subscriptionsGroup.render(
+        role,
+        application,
+        apiSubscriptions,
+        hasAnySubscriptions = true,
+        group = "Example",
+        afterSubscriptionRedirectTo = SubscriptionRedirect.MANAGE_PAGE,
+        messages,
+        appConfig,
+        request
+      ).body)
     }
 
     lazy val toggle = body.getElementById("test-1_0-toggle")

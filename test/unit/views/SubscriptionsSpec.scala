@@ -24,7 +24,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.DefaultMessagesApi
 import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
@@ -35,6 +35,7 @@ import scala.collection.JavaConversions._
 
 class SubscriptionsSpec extends UnitSpec with GuiceOneAppPerSuite with MockitoSugar {
 
+  implicit val messages = new DefaultMessagesApi().preferred(FakeRequest())
   val appConfig = mock[ApplicationConfig]
 
   trait Setup {
@@ -55,7 +56,7 @@ class SubscriptionsSpec extends UnitSpec with GuiceOneAppPerSuite with MockitoSu
     Some("Test Application"),
     Set.empty,
     Standard(),
-    false,
+    trusted = false,
     applicationState,
     None
   )
@@ -63,8 +64,10 @@ class SubscriptionsSpec extends UnitSpec with GuiceOneAppPerSuite with MockitoSu
   "Subscriptions page" should {
     val developer = Developer("Test", "Test", "Test", None)
 
-    val productionApplicationPendingGatekeeperApproval = buildApplication(ApplicationState.pendingGatekeeperApproval("somebody@example.com"), Environment.PRODUCTION)
-    val productionApplicationPendingRequesterVerification = buildApplication(ApplicationState.pendingRequesterVerification("somebody@example.com", ""), Environment.PRODUCTION)
+    val productionApplicationPendingGatekeeperApproval = buildApplication(
+      ApplicationState.pendingGatekeeperApproval("somebody@example.com"), Environment.PRODUCTION)
+    val productionApplicationPendingRequesterVerification = buildApplication(
+      ApplicationState.pendingRequesterVerification("somebody@example.com", ""), Environment.PRODUCTION)
     val productionApplication = buildApplication(ApplicationState.production("somebody@example.com", ""), Environment.PRODUCTION)
     val productionApplicationTesting = buildApplication(ApplicationState.testing, Environment.PRODUCTION)
 
@@ -78,10 +81,10 @@ class SubscriptionsSpec extends UnitSpec with GuiceOneAppPerSuite with MockitoSu
         application,
         Some(GroupedSubscriptions(Seq.empty, Seq.empty)),
         "",
-        false,
+        hasSubscriptions = false,
         request,
         developer,
-        applicationMessages,
+        messages,
         appConfig,
         "subscriptions"
       )

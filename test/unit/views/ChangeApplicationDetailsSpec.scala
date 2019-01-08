@@ -22,15 +22,15 @@ import domain._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits.applicationMessages
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.ViewHelpers.{elementExistsByText, elementIdentifiedByAttrContainsText, textareaExistsWithText}
 
-class ChangeApplicationDetailsSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class ChangeApplicationDetailsSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
 
@@ -40,10 +40,11 @@ class ChangeApplicationDetailsSpec extends UnitSpec with OneServerPerSuite with 
 
       val loggedIn = Developer("admin@example.com", "firstName1", "lastName1")
       val request = FakeRequest().withCSRFToken
+      implicit val messages = new DefaultMessagesApi().preferred(request)
       val form = EditApplicationForm.form.fill(EditApplicationForm(application.id, application.name, application.description,
         application.privacyPolicyUrl, application.termsAndConditionsUrl))
 
-      views.html.changeDetails.render(form, application, request, loggedIn, applicationMessages, appConfig, "nav-section")
+      views.html.changeDetails.render(form, application, request, loggedIn, messages, appConfig, "nav-section")
     }
 
     def formGroupWithLabelIsPrepopulated(doc: Document, labelText: String, inputValue: String) = {

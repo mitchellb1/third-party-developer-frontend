@@ -20,20 +20,21 @@ import config.ApplicationConfig
 import domain._
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits._
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.ViewHelpers._
 
-class SubscribeRequestSubmittedSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class SubscribeRequestSubmittedSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
   "Subscribe request submitted page" should {
     "render with no errors" in {
 
       val appConfig = mock[ApplicationConfig]
       val request = FakeRequest().withCSRFToken
+      implicit val messages = new DefaultMessagesApi().preferred(request)
 
       val appId = "1234"
       val apiName = "Test API"
@@ -44,7 +45,7 @@ class SubscribeRequestSubmittedSpec extends UnitSpec with OneServerPerSuite with
         Set(Collaborator(developer.email, Role.ADMINISTRATOR)), state = ApplicationState.production(developer.email, ""),
         access = Standard(redirectUris = Seq("https://red1", "https://red2"), termsAndConditionsUrl = Some("http://tnc-url.com")))
 
-      val page = views.html.subscribeRequestSubmitted.render(application, apiName, apiVersion, request, developer, applicationMessages, appConfig, "subscriptions")
+      val page = views.html.subscribeRequestSubmitted.render(application, apiName, apiVersion, request, developer, messages, appConfig, "subscriptions")
       page.contentType should include("text/html")
 
       val document = Jsoup.parse(page.body)

@@ -19,18 +19,18 @@ package unit.views
 import config.ApplicationConfig
 import org.scalatest.Matchers
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits.applicationMessages
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import views.html
 
-
-class AccountVerifiedSpec extends UnitSpec with Matchers with MockitoSugar with OneServerPerSuite {
+class AccountVerifiedSpec extends UnitSpec with Matchers with MockitoSugar with GuiceOneServerPerSuite {
 
   "Account verified view" should {
     implicit val mockConfig = mock[ApplicationConfig]
     implicit val request = FakeRequest()
+    implicit val messages = new DefaultMessagesApi().preferred(request)
 
     "contain a google analytics event (via the data-journey attribute)" in {
       val mainView = html.accountVerified()

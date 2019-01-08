@@ -21,15 +21,15 @@ import domain.Role.{ADMINISTRATOR, DEVELOPER}
 import domain._
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits._
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.ViewHelpers._
 
-class DeleteApplicationSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class DeleteApplicationSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
   val appId = "1234"
@@ -51,7 +51,9 @@ class DeleteApplicationSpec extends UnitSpec with OneServerPerSuite with Mockito
 
         val request = FakeRequest().withCSRFToken
 
-        val page = views.html.deleteApplication.render(app, role, request, loggedInUser, applicationMessages, appConfig, "details")
+        implicit val messages = new DefaultMessagesApi().preferred(request)
+
+        val page = views.html.deleteApplication.render(app, role, request, loggedInUser, messages, appConfig, "details")
 
         page.contentType should include("text/html")
 
@@ -71,7 +73,9 @@ class DeleteApplicationSpec extends UnitSpec with OneServerPerSuite with Mockito
 
       val request = FakeRequest().withCSRFToken
 
-      val page = views.html.deleteApplication.render(prodApp, DEVELOPER, request, loggedInUser, applicationMessages, appConfig, "details")
+      implicit val messages = new DefaultMessagesApi().preferred(request)
+
+      val page = views.html.deleteApplication.render(prodApp, DEVELOPER, request, loggedInUser, messages, appConfig, "details")
 
       page.contentType should include("text/html")
 

@@ -20,18 +20,20 @@ import config.ApplicationConfig
 import org.mockito.BDDMockito.given
 import org.scalatest.Matchers
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits.applicationMessages
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
+import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.play.test.UnitSpec
 import views.html
 
-class MainTemplateSpec extends UnitSpec with Matchers with MockitoSugar with OneServerPerSuite {
+class MainTemplateSpec extends UnitSpec with Matchers with MockitoSugar with GuiceOneServerPerSuite {
 
 
   "MainTemplateSpec" should {
 
     implicit val mockConfig = mock[ApplicationConfig]
+    implicit val messages = new DefaultMessagesApi().preferred(FakeRequest())
 
     "Use the sandbox class when the environment is set to the Enhanced Sandbox" in {
 

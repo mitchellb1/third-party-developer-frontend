@@ -21,14 +21,14 @@ import controllers.ApplicationSummary
 import domain.{Developer, _}
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits.applicationMessages
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.mvc.Flash
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.ViewHelpers.{elementExistsByText, elementIdentifiedByAttrContainsText}
 
-class ViewAllApplicationsPageSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class ViewAllApplicationsPageSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
 
@@ -36,8 +36,9 @@ class ViewAllApplicationsPageSpec extends UnitSpec with OneServerPerSuite with M
 
     def renderPage(appSummaries: Seq[ApplicationSummary]) = {
       val request = FakeRequest()
+      implicit val messages = new DefaultMessagesApi().preferred(request)
       val loggedIn = Developer("developer@example.com", "firstName", "lastname")
-      views.html.manageApplications.render(appSummaries, request, Flash(), loggedIn, applicationMessages, appConfig, "nav-section")
+      views.html.manageApplications.render(appSummaries, request, Flash(), loggedIn, messages, appConfig, "nav-section")
     }
 
     "show the empty nest page when there are no applications" in {
@@ -56,7 +57,7 @@ class ViewAllApplicationsPageSpec extends UnitSpec with OneServerPerSuite with M
       val appEnvironment = "Sandbox"
       val appUserRole = Role.ADMINISTRATOR
 
-      val appSummaries = Seq(ApplicationSummary("1111", appName, appEnvironment, appUserRole, TermsOfUseStatus.NOT_APPLICABLE, State.TESTING ))
+      val appSummaries = Seq(ApplicationSummary("1111", appName, appEnvironment, appUserRole, TermsOfUseStatus.NOT_APPLICABLE, State.TESTING))
 
       val document = Jsoup.parse(renderPage(appSummaries).body)
 
@@ -71,7 +72,7 @@ class ViewAllApplicationsPageSpec extends UnitSpec with OneServerPerSuite with M
 
       def shouldViewWithAppShowAlert(environment: String, termsOfUseStatus: TermsOfUseStatus, shouldAlert: Boolean) = {
 
-        val appSummaries = Seq(ApplicationSummary("1111", "App name 1", environment, Role.ADMINISTRATOR, termsOfUseStatus, State.TESTING ))
+        val appSummaries = Seq(ApplicationSummary("1111", "App name 1", environment, Role.ADMINISTRATOR, termsOfUseStatus, State.TESTING))
 
         val document = Jsoup.parse(renderPage(appSummaries).body)
 

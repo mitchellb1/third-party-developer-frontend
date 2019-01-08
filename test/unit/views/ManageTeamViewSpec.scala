@@ -22,16 +22,16 @@ import domain._
 import helpers.string._
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.Form
-import play.api.i18n.Messages.Implicits.applicationMessages
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.ViewHelpers.{elementExistsByText, linkExistsWithHref}
 
-class ManageTeamViewSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class ManageTeamViewSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
   val appId = "1234"
@@ -47,7 +47,8 @@ class ManageTeamViewSpec extends UnitSpec with OneServerPerSuite with MockitoSug
 
     def renderPage(role: Role = Role.ADMINISTRATOR, form: Form[AddTeamMemberForm] = AddTeamMemberForm.form) = {
       val request = FakeRequest().withCSRFToken
-      views.html.manageTeam.render(application, role, form, loggedInUser, request, applicationMessages, appConfig, "nav-section")
+      implicit val messages = new DefaultMessagesApi().preferred(request)
+      views.html.manageTeam.render(application, role, form, loggedInUser, request, messages, appConfig, "nav-section")
     }
 
     "show Add and Remove buttons for Admin" in {

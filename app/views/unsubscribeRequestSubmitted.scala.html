@@ -20,7 +20,7 @@
 @import model.Crumb
 
 @(app: Application, name: String, version: String)(
-implicit request: play.api.mvc.Request[Any], loggedIn: Developer, messages: Messages, applicationConfig: ApplicationConfig, navSection: String = "subscriptions")
+implicit request: play.api.mvc.Request[Any], loggedIn: Developer, messages: Messages, applicationConfig: ApplicationConfig, navSection: String)
 
 @devMain(
     title = "API Subscriptions",

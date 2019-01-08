@@ -23,7 +23,7 @@ import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import uk.gov.hmrc.time.DateTimeUtils
@@ -49,14 +49,21 @@ class TermsOfUseSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar
 
     "show terms of use agreement page that requires terms of use to be agreed" in {
       implicit val request = FakeRequest().withCSRFToken
+      implicit val messages = new DefaultMessagesApi().preferred(request)
 
       val checkInformation = CheckInformation(
-        confirmedName = false, None, apiSubscriptionsConfirmed = false, None, providedPrivacyPolicyURL = false, providedTermsAndConditionsURL = false, Seq.empty)
+        confirmedName = false,
+        None,
+        apiSubscriptionsConfirmed = false,
+        None,
+        providedPrivacyPolicyURL = false,
+        providedTermsAndConditionsURL = false,
+        Seq.empty)
       val termsOfUseForm = TermsOfUseForm.fromCheckInformation(checkInformation)
       val developer = Developer("email@example.com", "First Name", "Last Name", None)
 
       val page = views.html.applicationcheck.termsOfUse.render(
-        thirdPartyAppplication, TermsOfUseForm.form.fill(termsOfUseForm), request, developer, applicationMessages, appConfig, "credentials")
+        thirdPartyAppplication, TermsOfUseForm.form.fill(termsOfUseForm), request, developer, messages, appConfig, "credentials")
       page.contentType must include("text/html")
 
       val document = Jsoup.parse(page.body)
@@ -66,6 +73,7 @@ class TermsOfUseSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar
 
     "show terms of use agreement page that already has the correct terms of use agreed" in {
       implicit val request = FakeRequest().withCSRFToken
+      implicit val messages = new DefaultMessagesApi().preferred(request)
 
       val appConfigMock = mock[ApplicationConfig]
       val termsOfUseAgreement = TermsOfUseAgreement("email@example.com", DateTimeUtils.now, "1.0")
@@ -85,7 +93,7 @@ class TermsOfUseSpec extends PlaySpec with GuiceOneAppPerSuite with MockitoSugar
         TermsOfUseForm.form.fill(termsOfUseForm),
         request,
         developer,
-        applicationMessages,
+        messages,
         appConfigMock,
         navSection = "credentials")
       page.contentType must include("text/html")

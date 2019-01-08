@@ -20,15 +20,15 @@ import config.ApplicationConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.i18n.Messages.Implicits._
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.i18n.DefaultMessagesApi
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.ViewHelpers._
 
-class ApplicationVerificationSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class ApplicationVerificationSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
 
@@ -36,7 +36,8 @@ class ApplicationVerificationSpec extends UnitSpec with OneServerPerSuite with M
 
     def renderPage(success: Boolean): Html = {
       val request = FakeRequest().withCSRFToken
-      views.html.applicationVerification.render(success, request, applicationMessages, appConfig)
+      implicit val messages = new DefaultMessagesApi().preferred(request)
+      views.html.applicationVerification.render(success, request, messages, appConfig)
     }
 
     "show email verified message when email was verified" in {
