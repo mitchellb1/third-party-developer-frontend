@@ -21,13 +21,13 @@ import domain.{Application, Environment}
 import model.Crumb
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class BreadcrumbsSpec extends UnitSpec with OneServerPerSuite with MockitoSugar {
+class BreadcrumbsSpec extends UnitSpec with GuiceOneServerPerSuite with MockitoSugar {
 
   val appConfig = mock[ApplicationConfig]
 

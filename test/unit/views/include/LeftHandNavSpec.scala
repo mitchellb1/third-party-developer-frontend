@@ -18,27 +18,23 @@ package unit.views.include
 
 import domain._
 import org.jsoup.Jsoup
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.test.CSRFTokenHelper.CSRFRequest
-import play.api.test.FakeRequest
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.ViewHelpers.elementExistsByText
 
-class LeftHandNavSpec extends UnitSpec with OneServerPerSuite {
+class LeftHandNavSpec extends UnitSpec with GuiceOneServerPerSuite {
 
   "left hand nav" should {
-      val request = FakeRequest().withCSRFToken
+    val applicationId = "1234"
+    val clientId = "clientId123"
+    val applicationName = "Test Application"
 
-      val applicationId = "1234"
-      val clientId = "clientId123"
-      val applicationName = "Test Application"
+    val loggedInUser = Developer("givenname.familyname@example.com", "Givenname", "Familyname")
 
-      val loggedInUser = Developer("givenname.familyname@example.com", "Givenname", "Familyname")
-
-      val application = Application(applicationId, clientId, applicationName, DateTimeUtils.now, Environment.PRODUCTION, Some("Description 1"),
-        Set(Collaborator(loggedInUser.email, Role.ADMINISTRATOR)), state = ApplicationState.production(loggedInUser.email, ""),
-        access = Standard(redirectUris = Seq("https://red1", "https://red2"), termsAndConditionsUrl = Some("http://tnc-url.com")))
+    val application = Application(applicationId, clientId, applicationName, DateTimeUtils.now, Environment.PRODUCTION, Some("Description 1"),
+      Set(Collaborator(loggedInUser.email, Role.ADMINISTRATOR)), state = ApplicationState.production(loggedInUser.email, ""),
+      access = Standard(redirectUris = Seq("https://red1", "https://red2"), termsAndConditionsUrl = Some("http://tnc-url.com")))
 
     "render with no errors" in {
       val page = views.html.include.leftHandNav.render(Some(application), Some("details"))

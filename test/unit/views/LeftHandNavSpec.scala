@@ -16,18 +16,19 @@
 
 package unit.views
 
-import domain._
 import domain.Environment.PRODUCTION
+import domain._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.DateTimeUtils.now
 import views.html.include.leftHandNav
+
 import scala.collection.JavaConversions._
 
-class LeftHandNavSpec extends UnitSpec with OneServerPerSuite {
+class LeftHandNavSpec extends UnitSpec with GuiceOneServerPerSuite {
 
   trait Setup {
     implicit val request = FakeRequest()
