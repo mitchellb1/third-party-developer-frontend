@@ -61,7 +61,7 @@ lazy val test = Seq(
   "jp.t2v" %% "play2-auth-test" % t2vVersion % "test",
   "org.scalaj" %% "scalaj-http" % "2.3.0" % "test",
   "org.scalacheck" %% "scalacheck" % "1.14.0" % "test",
-  "com.github.mkolisnyk" % "cucumber-reports" % "1.3.5" % "test",
+  "com.github.mkolisnyk" % "cucumber-reports" % "1.0.7" % "test",
   "net.masterthought" % "cucumber-reporting" % "3.20.0" % "test",
   "net.masterthought" % "cucumber-sandwich" % "3.20.0" % "test",
   "com.assertthat" % "selenium-shutterbug" % "0.9" % "test"
