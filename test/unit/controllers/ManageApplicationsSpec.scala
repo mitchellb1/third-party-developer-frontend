@@ -25,24 +25,20 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{any, eq => mockEq}
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.filters.csrf.CSRF.TokenProvider
 import service.{ApplicationService, AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.ViewHelpers._
-import utils.WithCSRFAddToken
-import utils.WithLoggedInSession._
 
 import scala.concurrent.Future._
 
-class ManageApplicationsSpec
-  extends UnitSpec with MockitoSugar with WithFakeApplication with ScalaFutures with SubscriptionTestHelperSugar with WithCSRFAddToken {
+class ManageApplicationsSpec extends BaseControllerSpec {
+
+  import withLoggedInSession._
 
   implicit val materializer = fakeApplication.materializer
   val appId = "1234"

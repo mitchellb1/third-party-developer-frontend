@@ -36,12 +36,14 @@ import service.{ApplicationService, AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.time.DateTimeUtils
-import utils.WithLoggedInSession._
 
 import scala.concurrent.Future
 import scala.concurrent.Future._
 
-class CredentialsSpec extends BaseControllerSpec with SubscriptionTestHelperSugar {
+class CredentialsSpec extends BaseControllerSpec {
+
+  import withLoggedInSession._
+
   implicit val materializer = fakeApplication.materializer
   val loggedInUser = Developer("thirdpartydeveloper@example.com", "John", "Doe")
   val sessionId = "sessionId"

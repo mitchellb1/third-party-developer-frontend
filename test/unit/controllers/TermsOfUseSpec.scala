@@ -35,11 +35,12 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.WithCSRFAddToken
-import utils.WithLoggedInSession._
 
 import scala.concurrent.Future
 
 class TermsOfUseSpec extends BaseControllerSpec with WithCSRFAddToken {
+
+  import withLoggedInSession._
 
   implicit val materializer = fakeApplication.materializer
 
@@ -103,7 +104,7 @@ class TermsOfUseSpec extends BaseControllerSpec with WithCSRFAddToken {
       val result = await(addToken(underTest.termsOfUse(appId))(loggedInRequest))
       status(result) shouldBe OK
       bodyOf(result) should include("Agree to our terms of use")
-      bodyOf(result) should not include ("Terms of use accepted on")
+      bodyOf(result) should not include "Terms of use accepted on"
     }
 
     "render the page for an administrator on a standard production app when the ToU have been agreed" in new Setup {
@@ -151,7 +152,8 @@ class TermsOfUseSpec extends BaseControllerSpec with WithCSRFAddToken {
 
       givenTheApplicationExists()
       val captor = ArgumentCaptor.forClass(classOf[CheckInformation])
-      given(underTest.applicationService.updateCheckInformation(mockEq(appId), captor.capture())(any())).willReturn(Future.successful(ApplicationUpdateSuccessful))
+      given(underTest.applicationService.updateCheckInformation(mockEq(appId), captor.capture())(any()))
+        .willReturn(Future.successful(ApplicationUpdateSuccessful))
 
       val request = loggedInRequest.withFormUrlEncodedBody("termsOfUseAgreed" -> "true")
       val result = await(addToken(underTest.agreeTermsOfUse(appId))(request))

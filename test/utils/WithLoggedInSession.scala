@@ -16,8 +16,9 @@
 
 package utils
 
+import javax.inject.Inject
 import jp.t2v.lab.play2.auth.AuthConfig
-import play.api.libs.Crypto
+import play.api.libs.crypto.CookieSigner
 import play.api.mvc.Cookie
 import play.api.test.FakeRequest
 
@@ -25,7 +26,7 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.duration._
 
-object WithLoggedInSession {
+class WithLoggedInSession @Inject()(cookieSigner: CookieSigner) {
 
   implicit class AuthFakeRequest[A](fakeRequest: FakeRequest[A]) {
 
@@ -37,10 +38,12 @@ object WithLoggedInSession {
     // This helper faithfully reproduces the cookie-based session that we actually use.
     def withLoggedIn(implicit config: AuthConfig): config.Id => FakeRequest[A] = { id =>
       val token = Await.result(config.idContainer.startNewSession(id, Int.MaxValue)(fakeRequest, global), 10.seconds)
-      def sign(token: String) = Crypto.sign(token) + token
+
+      def sign(token: String) = cookieSigner.sign(token) + token
 
       val cookie = Cookie("PLAY2AUTH_SESS_ID", sign(token))
       fakeRequest.withCookies(cookie)
     }
   }
+
 }

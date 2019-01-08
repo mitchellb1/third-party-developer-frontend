@@ -34,9 +34,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.TestApplications._
 import utils.ViewHelpers._
-import utils.WithLoggedInSession._
 
 class RedirectsSpec extends BaseControllerSpec {
+
+  import withLoggedInSession._
+
   implicit val materializer = fakeApplication.materializer
 
   val applicationId = "1234"

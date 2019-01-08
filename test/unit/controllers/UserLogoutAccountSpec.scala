@@ -25,7 +25,6 @@ import org.mockito.BDDMockito.given
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -33,13 +32,14 @@ import play.filters.csrf.CSRF._
 import service.{DeskproService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import utils.WithCSRFAddToken
-import utils.WithLoggedInSession._
 
 import scala.concurrent.Future
 
-class UserLogoutAccountSpec extends UnitSpec with MockitoSugar with WithFakeApplication with WithCSRFAddToken {
+class UserLogoutAccountSpec extends BaseControllerSpec with WithCSRFAddToken {
+
+  import withLoggedInSession._
+
   implicit val materializer = fakeApplication.materializer
   val user = Developer("thirdpartydeveloper@example.com", "John", "Doe")
   val sessionId = UUID.randomUUID().toString

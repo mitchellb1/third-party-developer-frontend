@@ -34,11 +34,13 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.WithCSRFAddToken
-import utils.WithLoggedInSession._
 
 import scala.concurrent.Future._
 
 class SubscriptionsSpec extends BaseControllerSpec with SubscriptionTestHelperSugar with WithCSRFAddToken {
+
+  import withLoggedInSession._
+
   implicit val materializer = fakeApplication.materializer
   val appId = "1234"
   val apiName = "api-1"

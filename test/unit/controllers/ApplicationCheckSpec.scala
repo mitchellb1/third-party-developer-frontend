@@ -33,14 +33,16 @@ import play.api.test.Helpers.{redirectLocation, _}
 import play.filters.csrf.CSRF.TokenProvider
 import service.{ApplicationService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.time.DateTimeUtils
 import utils.WithCSRFAddToken
-import utils.WithLoggedInSession._
+
 import scala.concurrent.Future
 import scala.concurrent.Future.successful
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 class ApplicationCheckSpec extends BaseControllerSpec with SubscriptionTestHelperSugar with WithCSRFAddToken {
+
+  import withLoggedInSession._
 
   implicit val materializer = fakeApplication.materializer
   val appId = "1234"

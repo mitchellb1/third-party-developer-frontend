@@ -36,11 +36,12 @@ import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.TestApplications._
 import utils.ViewHelpers._
 import utils.WithCSRFAddToken
-import utils.WithLoggedInSession._
 
 import scala.concurrent.Future._
 
 class DetailsSpec extends BaseControllerSpec with WithCSRFAddToken {
+
+  import withLoggedInSession._
 
   implicit val materializer = fakeApplication.materializer
 
@@ -275,7 +276,7 @@ class DetailsSpec extends BaseControllerSpec with WithCSRFAddToken {
   }
 
   trait Setup {
-    val underTest = new Details (
+    val underTest = new Details(
       mock[ThirdPartyDeveloperConnector],
       mock[AuditService],
       mock[ApplicationService],
@@ -410,5 +411,7 @@ class DetailsSpec extends BaseControllerSpec with WithCSRFAddToken {
         await(addToken(underTest.changeDetailsAction(app.id))(request.withJsonBody(Json.toJson(app.toForm))))
       }
     }
+
   }
+
 }

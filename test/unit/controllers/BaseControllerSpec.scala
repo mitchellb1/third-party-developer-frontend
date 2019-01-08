@@ -21,12 +21,18 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
+import play.api.http.SecretConfiguration
+import play.api.libs.crypto.DefaultCookieSigner
 import play.twirl.api.Html
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import utils.WithLoggedInSession
 
 class BaseControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with ScalaFutures {
   val mockErrorHandler = mock[ErrorHandler]
 
   when(mockErrorHandler.notFoundTemplate(any())).thenReturn(Html(""))
   when(mockErrorHandler.badRequestTemplate(any())).thenReturn(Html(""))
+
+  val withLoggedInSession = new WithLoggedInSession(new DefaultCookieSigner(SecretConfiguration()))
+
 }

@@ -23,21 +23,20 @@ import domain._
 import org.joda.time.DateTimeZone
 import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{eq => mockEq, _}
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
+import play.api.http.Status.NO_CONTENT
 import play.api.test.{FakeRequest, Helpers, Writeables}
 import play.filters.csrf.CSRF.TokenProvider
 import service.{ApplicationService, AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import uk.gov.hmrc.time.DateTimeUtils
-import utils.WithCSRFAddToken
-import utils.WithLoggedInSession._
 
 import scala.concurrent.Future
 
-class ManageApplicationUpliftSpec extends UnitSpec with MockitoSugar with WithFakeApplication with ScalaFutures with Writeables with WithCSRFAddToken {
+class ManageApplicationUpliftSpec extends BaseControllerSpec with Writeables {
+
+  import withLoggedInSession._
+
   implicit val materializer = fakeApplication.materializer
   val appId = "1234"
   val clientId = "clientId456"
@@ -68,7 +67,7 @@ class ManageApplicationUpliftSpec extends UnitSpec with MockitoSugar with WithFa
 
       def mockLogout() =
         given(underTest.sessionService.destroy(mockEq(session.sessionId))(any[HeaderCarrier]))
-          .willReturn(Future.successful(204))
+          .willReturn(Future.successful(NO_CONTENT))
 
       val loggedOutRequest = FakeRequest().withSession(sessionParams: _*)
       val loggedInRequest = FakeRequest().withLoggedIn(underTest)(sessionId).withSession(sessionParams: _*)

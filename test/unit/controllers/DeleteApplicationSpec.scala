@@ -24,22 +24,22 @@ import org.joda.time.DateTime
 import org.mockito.BDDMockito.given
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.verify
-import org.scalatest.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.filters.csrf.CSRF.TokenProvider
 import service.{ApplicationService, AuditService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.WithCSRFAddToken
-import utils.WithLoggedInSession._
 
 import scala.concurrent.Future
 import scala.concurrent.Future.successful
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 
-class DeleteApplicationSpec extends UnitSpec with WithCSRFAddToken with MockitoSugar with WithFakeApplication {
+class DeleteApplicationSpec extends BaseControllerSpec with WithCSRFAddToken {
+
+  import withLoggedInSession._
+
   implicit val materializer = fakeApplication.materializer
 
   trait Setup {

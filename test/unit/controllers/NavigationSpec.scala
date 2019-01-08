@@ -22,17 +22,16 @@ import domain.{Developer, Session}
 import org.mockito.BDDMockito._
 import org.mockito.Matchers
 import org.mockito.Matchers._
-import org.scalatest.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import service.SessionService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import utils.WithLoggedInSession._
 
 import scala.concurrent.Future._
 
-class NavigationSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
+class NavigationSpec extends BaseControllerSpec {
+
+  import withLoggedInSession._
 
   implicit val materializer = fakeApplication.materializer
   val loggedInUser = Developer("thirdpartydeveloper@example.com", "John", "Doe")
