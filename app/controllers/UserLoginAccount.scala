@@ -21,17 +21,15 @@ import domain._
 import javax.inject.{Inject, Singleton}
 import jp.t2v.lab.play2.auth.LoginLogout
 import play.api.Play.current
-import play.api.data.Form
-import play.api.data.Forms.{mapping, text}
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Action
-import play.api.mvc.{Action, Call}
-import play.api.mvc.{Action, MessagesControllerComponents}
-import service.AuditAction.{LoginFailedDueToInvalidEmail, LoginFailedDueToInvalidPassword, LoginFailedDueToLockedAccount, LoginSucceeded}
-import service.{AuditAction, AuditService, SessionService}
+import play.api.mvc.MessagesControllerComponents
+import service.AuditAction.{LoginFailedDueToInvalidEmail, LoginFailedDueToInvalidPassword, LoginFailedDueToLockedAccount, LoginSucceeded, _}
+import service.{AuditAction, AuditService, SessionService, _}
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html._
+import views.html.protectaccount._
 
+import scala.concurrent.Future
 import scala.concurrent.Future.successful
 
 trait Auditing {
@@ -50,6 +48,7 @@ trait Auditing {
 class UserLoginAccount @Inject()(val auditService: AuditService,
                                  val errorHandler: ErrorHandler,
                                  val sessionService: SessionService,
+                                 val applicationService: ApplicationService,
                                  val mcc: MessagesControllerComponents)(implicit val appConfig: ApplicationConfig)
   extends LoggedOutController(mcc) with LoginLogout with Auditing {
 
@@ -77,9 +76,9 @@ class UserLoginAccount @Inject()(val auditService: AuditService,
       login => sessionService.authenticate(login.emailaddress, login.password) flatMap { userAuthenticationResponse =>
         userAuthenticationResponse.session match {
           case Some(session) => audit(LoginSucceeded, session.developer)
-                                gotoLoginSucceeded(session.sessionId)
-          case None => successful(Ok(logInAccessCode(
-            LoginTotpForm.form, login.emailaddress, userAuthenticationResponse.nonce.get)))
+            gotoLoginSucceeded(session.sessionId)
+          case None => successful(Ok(logInAccessCode(ProtectAccountForm.form))
+            .withSession(request.session + ("emailAddress" -> login.emailaddress) + ("nonce" -> userAuthenticationResponse.nonce.get)))
         }
       } recover {
         case _: InvalidEmail =>
@@ -98,29 +97,40 @@ class UserLoginAccount @Inject()(val auditService: AuditService,
   }
 
   def authenticateTotp = Action.async { implicit request =>
-    LoginTotpForm.form.bindFromRequest.fold(
-      errors => successful(BadRequest(logInAccessCode(errors, errors.data("email"), errors.data("nonce")))),
-      validForm => sessionService.authenticateTotp(validForm.email, validForm.accessCode, validForm.nonce) flatMap { session =>
-        audit(LoginSucceeded, session.developer)
-        gotoLoginSucceeded(session.sessionId)
-      } recover {
-        case _: InvalidCredentials =>
-          Unauthorized(logInAccessCode(
-            LoginTotpForm.form.fill(validForm).withError("accessCode", "You have entered an incorrect access code"),
-            validForm.email, validForm.nonce))
+    ProtectAccountForm.form.bindFromRequest.fold(
+      errors => successful(BadRequest(logInAccessCode(errors))),
+      validForm => {
+        val email = request.session.get("emailAddress").get
+        sessionService.authenticateTotp(email, validForm.accessCode, request.session.get("nonce").get) flatMap { session =>
+          audit(LoginSucceeded, session.developer)
+          gotoLoginSucceeded(session.sessionId)
+        } recover {
+          case _: InvalidCredentials =>
+            audit(LoginFailedDueToInvalidAccessCode, Map("developerEmail" -> email))
+            Unauthorized(logInAccessCode(ProtectAccountForm.form.fill(validForm).withError("accessCode", "You have entered an incorrect access code")))
+        }
       }
     )
   }
-}
 
-final case class LoginTotpForm(accessCode: String, email: String, nonce: String)
+  def get2SVHelpConfirmationPage() = loggedOutAction { implicit request =>
+    Future.successful(Ok(protectAccountNoAccessCode(Help2SVConfirmForm.form)))
+  }
 
-object LoginTotpForm {
-  def form: Form[LoginTotpForm] = Form(
-    mapping(
-      "accessCode" -> text.verifying(FormKeys.accessCodeInvalidKey, s => s.matches("^[0-9]{6}$")),
-      "email" -> text,
-      "nonce" -> text
-    )(LoginTotpForm.apply)(LoginTotpForm.unapply)
-  )
+  def get2SVHelpCompletionPage() = loggedOutAction { implicit request =>
+    Future.successful(Ok(protectAccountNoAccessCodeComplete()))
+  }
+
+  def confirm2SVHelp() = loggedOutAction { implicit request =>
+    Help2SVConfirmForm.form.bindFromRequest.fold(form => {
+      Future.successful(BadRequest(protectAccountNoAccessCode(form)))
+    },
+      form => {
+        form.helpRemoveConfirm match {
+          case Some("Yes") => applicationService.request2SVRemoval(request.session.get("emailAddress").getOrElse("")).
+            map(_ => Ok(protectAccountNoAccessCodeComplete()))
+          case _ => Future.successful(Redirect(controllers.routes.UserLoginAccount.login()))
+        }
+      })
+  }
 }
