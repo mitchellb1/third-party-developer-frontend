@@ -18,7 +18,6 @@ package config
 
 import com.google.inject.AbstractModule
 import connectors.{ConnectorMetrics, ConnectorMetricsImpl}
-import config.SessionTimeoutFilterWithWhitelist
 import uk.gov.hmrc.play.bootstrap.filters.frontend.SessionTimeoutFilter
 
 class ConfigurationModule extends AbstractModule {

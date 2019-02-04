@@ -19,8 +19,8 @@
 @import model.Crumb
 
 @(title: String, userFullName: Option[String] = None, isRegistering: Boolean = false, breadcrumbs: Seq[Crumb] = Seq.empty,
-    leftNav: Option[Html] = None, back: Option[String] = None, fullWidthContent: Boolean = false, useHotjar: Boolean = false)(mainContent: Html)(
-    implicit request: Request[_], messages: Messages, applicationConfig: config.ApplicationConfig)
+    leftNav: Option[Html] = None, back: Option[String] = None, fullWidthContent: Boolean = false, useHotjar: Boolean = false,
+    display2svSignupBanner: Boolean = false)(mainContent: Html)(implicit request: Request[_], messages: Messages, applicationConfig: config.ApplicationConfig)
 
 
 @userBanner = {
@@ -29,6 +29,14 @@
             @headerNavLinks(UserNavLinks(userFullName, isRegistering), anchorClass=Some("link-style"))
         </ul>
     </div>
+    @if(display2svSignupBanner) {
+        <div class="banner-information-with-action">
+            <strong class="banner-message">
+                Protect your Developer Hub account by <a href="@routes.ProtectAccount.getProtectAccount()">
+                adding 2-step verification</a>.
+            </strong>
+        </div>
+    }
 }
 
 @main(title = s"$title - HMRC Developer Hub - GOV.UK",

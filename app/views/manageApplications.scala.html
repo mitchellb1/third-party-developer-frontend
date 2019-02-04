@@ -30,11 +30,13 @@
         Crumb("View all applications", "", Some("data-breadcrumb-manage-app")),
         Crumb.home
     ),
-    leftNav = Some(leftHandNav(None, Option(navSection)))
+    leftNav = Some(leftHandNav(None, Option(navSection))),
+    display2svSignupBanner = loggedIn.mfaEnabled.isEmpty || !loggedIn.mfaEnabled.get
 ) {
 
     @if(applications.isEmpty) {
         <h1 class="heading-xlarge">Welcome to your account</h1>
+
         <section>
             <p>You can now create applications and subscribe to APIs.</p>
             <p>
